@@ -1,34 +1,34 @@
 /*
 
-    cloud.js
+ cloud.js
 
-    a backend API for SNAP!
+ a backend API for SNAP!
 
-    written by Jens Mönig
+ written by Jens Mönig
 
-    Copyright (C) 2015 by Jens Mönig
+ Copyright (C) 2015 by Jens Mönig
 
-    This file is part of Snap!.
+ This file is part of Snap!.
 
-    Snap! is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of
-    the License, or (at your option) any later version.
+ Snap! is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of
+ the License, or (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
 
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-*/
+ */
 
 // Global settings /////////////////////////////////////////////////////
 
 /*global modules, IDE_Morph, SnapSerializer, hex_sha512, alert, nop,
-localize*/
+ localize*/
 
 modules.cloud = '2015-December-15';
 
@@ -80,12 +80,10 @@ Cloud.prototype.setRoute = function (username) {
 
 // Cloud: Snap! API
 
-Cloud.prototype.signup = function (
-    username,
-    email,
-    callBack,
-    errorCall
-) {
+Cloud.prototype.signup = function (username,
+                                   email,
+                                   callBack,
+                                   errorCall) {
     // both callBack and errorCall are two-argument functions
     var request = new XMLHttpRequest(),
         myself = this;
@@ -93,11 +91,11 @@ Cloud.prototype.signup = function (
         request.open(
             "GET",
             (this.hasProtocol() ? '' : 'http://')
-                + this.url + 'SignUp'
-                + '?Username='
-                + encodeURIComponent(username)
-                + '&Email='
-                + encodeURIComponent(email),
+            + this.url + 'SignUp'
+            + '?Username='
+            + encodeURIComponent(username)
+            + '&Email='
+            + encodeURIComponent(email),
             true
         );
         request.setRequestHeader(
@@ -136,11 +134,9 @@ Cloud.prototype.signup = function (
     }
 };
 
-Cloud.prototype.getPublicProject = function (
-    id,
-    callBack,
-    errorCall
-) {
+Cloud.prototype.getPublicProject = function (id,
+                                             callBack,
+                                             errorCall) {
     // id is Username=username&projectName=projectname,
     // where the values are url-component encoded
     // callBack is a single argument function, errorCall take two args
@@ -150,9 +146,9 @@ Cloud.prototype.getPublicProject = function (
         request.open(
             "GET",
             (this.hasProtocol() ? '' : 'http://')
-                + this.url + 'RawPublic'
-                + '?'
-                + id,
+            + this.url + 'RawPublic'
+            + '?'
+            + id,
             true
         );
         request.setRequestHeader(
@@ -189,11 +185,9 @@ Cloud.prototype.getPublicProject = function (
     }
 };
 
-Cloud.prototype.resetPassword = function (
-    username,
-    callBack,
-    errorCall
-) {
+Cloud.prototype.resetPassword = function (username,
+                                          callBack,
+                                          errorCall) {
     // both callBack and errorCall are two-argument functions
     var request = new XMLHttpRequest(),
         myself = this;
@@ -201,9 +195,9 @@ Cloud.prototype.resetPassword = function (
         request.open(
             "GET",
             (this.hasProtocol() ? '' : 'http://')
-                + this.url + 'ResetPW'
-                + '?Username='
-                + encodeURIComponent(username),
+            + this.url + 'ResetPW'
+            + '?Username='
+            + encodeURIComponent(username),
             true
         );
         request.setRequestHeader(
@@ -242,12 +236,10 @@ Cloud.prototype.resetPassword = function (
     }
 };
 
-Cloud.prototype.login = function (
-    username,
-    password,
-    callBack,
-    errorCall
-) {
+Cloud.prototype.login = function (username,
+                                  password,
+                                  callBack,
+                                  errorCall) {
     // both callBack and errorCall are two-argument functions
     var request = new XMLHttpRequest(),
         usr = JSON.stringify({'__h': password, '__u': username}),
@@ -257,9 +249,9 @@ Cloud.prototype.login = function (
         request.open(
             "POST",
             (this.hasProtocol() ? '' : 'http://') +
-                this.url +
-                '?SESSIONGLUE=' +
-                this.route,
+            this.url +
+            '?SESSIONGLUE=' +
+            this.route,
             true
         );
         request.setRequestHeader(
@@ -307,10 +299,8 @@ Cloud.prototype.login = function (
     }
 };
 
-Cloud.prototype.reconnect = function (
-    callBack,
-    errorCall
-) {
+Cloud.prototype.reconnect = function (callBack,
+                                      errorCall) {
     if (!(this.username && this.password)) {
         this.message('You are not logged in');
         return;
@@ -333,7 +323,7 @@ Cloud.prototype.saveProject = function (ide, callBack, errorCall) {
     ide.serializer.isCollectingMedia = true;
     pdata = ide.serializer.serialize(ide.stage);
     media = ide.hasChangedMedia ?
-            ide.serializer.mediaXML(ide.projectName) : null;
+        ide.serializer.mediaXML(ide.projectName) : null;
     ide.serializer.isCollectingMedia = false;
     ide.serializer.flushMedia();
 
@@ -343,7 +333,7 @@ Cloud.prototype.saveProject = function (ide, callBack, errorCall) {
         new DialogBoxMorph().inform(
             'Snap!Cloud - Cannot Save Project',
             'The media inside this project exceeds 10 MB.\n' +
-                'Please reduce the size of costumes or sounds.\n',
+            'Please reduce the size of costumes or sounds.\n',
             ide.world(),
             ide.cloudIcon(null, new Color(180, 0, 0))
         );
@@ -409,12 +399,10 @@ Cloud.prototype.getProjectList = function (callBack, errorCall) {
     );
 };
 
-Cloud.prototype.changePassword = function (
-    oldPW,
-    newPW,
-    callBack,
-    errorCall
-) {
+Cloud.prototype.changePassword = function (oldPW,
+                                           newPW,
+                                           callBack,
+                                           errorCall) {
     var myself = this;
     this.reconnect(
         function () {
@@ -494,12 +482,10 @@ Cloud.prototype.callURL = function (url, callBack, errorCall) {
     }
 };
 
-Cloud.prototype.callService = function (
-    serviceName,
-    callBack,
-    errorCall,
-    args
-) {
+Cloud.prototype.callService = function (serviceName,
+                                        callBack,
+                                        errorCall,
+                                        args) {
     // both callBack and errorCall are optional two-argument functions
     var request = new XMLHttpRequest(),
         service = this.api[serviceName],
@@ -545,7 +531,7 @@ Cloud.prototype.callService = function (
             if (request.readyState === 4) {
                 var responseList = [];
                 if (request.responseText &&
-                        request.responseText.indexOf('ERROR') === 0) {
+                    request.responseText.indexOf('ERROR') === 0) {
                     errorCall.call(
                         this,
                         request.responseText,
@@ -604,7 +590,9 @@ Cloud.prototype.parseAPI = function (src) {
 Cloud.prototype.parseResponse = function (src) {
     var ans = [],
         lines;
-    if (!src) {return ans; }
+    if (!src) {
+        return ans;
+    }
     lines = src.split(" ");
     lines.forEach(function (service) {
         var entries = service.split("&"),
@@ -622,7 +610,9 @@ Cloud.prototype.parseResponse = function (src) {
 
 Cloud.prototype.parseDict = function (src) {
     var dict = {};
-    if (!src) {return dict; }
+    if (!src) {
+        return dict;
+    }
     src.split("&").forEach(function (entry) {
         var pair = entry.split("="),
             key = decodeURIComponent(pair[0]),
@@ -636,7 +626,9 @@ Cloud.prototype.encodeDict = function (dict) {
     var str = '',
         pair,
         key;
-    if (!dict) {return null; }
+    if (!dict) {
+        return null;
+    }
     for (key in dict) {
         if (dict.hasOwnProperty(key)) {
             pair = encodeURIComponent(key)

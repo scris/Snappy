@@ -1,66 +1,66 @@
 /*
 
-    lists.js
+ lists.js
 
-    list data structure and GUI for SNAP!
+ list data structure and GUI for SNAP!
 
-    written by Jens Mönig and Brian Harvey
-    jens@moenig.org, bh@cs.berkeley.edu
+ written by Jens Mönig and Brian Harvey
+ jens@moenig.org, bh@cs.berkeley.edu
 
-    Copyright (C) 2017 by Jens Mönig and Brian Harvey
+ Copyright (C) 2017 by Jens Mönig and Brian Harvey
 
-    This file is part of Snap!.
+ This file is part of Snap!.
 
-    Snap! is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of
-    the License, or (at your option) any later version.
+ Snap! is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of
+ the License, or (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
 
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-    prerequisites:
-    --------------
-    needs morphic.js, widgets.js and gui.js
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-    I. hierarchy
-    -------------
-    the following tree lists all constructors hierarchically,
-    indentation indicating inheritance. Refer to this list to get a
-    contextual overview:
-
-    List
-
-    BoxMorph*
-        ListWatcherMorph
-
-    * from Morphic.js
+ prerequisites:
+ --------------
+ needs morphic.js, widgets.js and gui.js
 
 
-    II. toc
-    -------
-    the following list shows the order in which all constructors are
-    defined. Use this list to locate code in this document:
+ I. hierarchy
+ -------------
+ the following tree lists all constructors hierarchically,
+ indentation indicating inheritance. Refer to this list to get a
+ contextual overview:
 
-    List
-    ListWatcherMorph
+ List
 
-*/
+ BoxMorph*
+ ListWatcherMorph
+
+ * from Morphic.js
+
+
+ II. toc
+ -------
+ the following list shows the order in which all constructors are
+ defined. Use this list to locate code in this document:
+
+ List
+ ListWatcherMorph
+
+ */
 
 // Global settings /////////////////////////////////////////////////////
 
 /*global modules, BoxMorph, HandleMorph, PushButtonMorph, SyntaxElementMorph,
-Color, Point, WatcherMorph, StringMorph, SpriteMorph, ScrollFrameMorph,
-CellMorph, ArrowMorph, MenuMorph, snapEquals, Morph, isNil, localize,
-MorphicPreferences, TableDialogMorph, SpriteBubbleMorph, SpeechBubbleMorph,
-TableFrameMorph, TableMorph, Variable, isSnapObject*/
+ Color, Point, WatcherMorph, StringMorph, SpriteMorph, ScrollFrameMorph,
+ CellMorph, ArrowMorph, MenuMorph, snapEquals, Morph, isNil, localize,
+ MorphicPreferences, TableDialogMorph, SpriteBubbleMorph, SpeechBubbleMorph,
+ TableFrameMorph, TableMorph, Variable, isSnapObject*/
 
 modules.lists = '2017-February-14';
 
@@ -70,37 +70,37 @@ var ListWatcherMorph;
 // List ////////////////////////////////////////////////////////////////
 
 /*
-    I am a dynamic array data structure for SNAP!
-    My index starts with 1
+ I am a dynamic array data structure for SNAP!
+ My index starts with 1
 
-    I am a "smart" hybrid list, because I can be used as both a linked
-    list and as a dynamic array
+ I am a "smart" hybrid list, because I can be used as both a linked
+ list and as a dynamic array
 
-    public interface:
+ public interface:
 
-    setters (linked):
-    -----------------
-    cons                - answer a new list with the given item in front
-    cdr                    - answer all but the first element
+ setters (linked):
+ -----------------
+ cons                - answer a new list with the given item in front
+ cdr                    - answer all but the first element
 
-    setters (arrayed):
-    ------------------
-    add(element, index)    - insert the element before the given slot,
-    put(element, index)    - overwrite the element at the given slot
-    remove(index)        - remove the given slot, shortening the list
-    clear()                - remove all elements
+ setters (arrayed):
+ ------------------
+ add(element, index)    - insert the element before the given slot,
+ put(element, index)    - overwrite the element at the given slot
+ remove(index)        - remove the given slot, shortening the list
+ clear()                - remove all elements
 
-    getters (all hybrid):
-    ---------------------
-    length()            - number of slots
-    at(index)            - element present in specified slot
-    contains(element)    - <bool>
+ getters (all hybrid):
+ ---------------------
+ length()            - number of slots
+ at(index)            - element present in specified slot
+ contains(element)    - <bool>
 
-    conversion:
-    -----------
-    asArray()            - answer me as JavaScript array
-    asText()            - answer my elements (recursively) concatenated
-*/
+ conversion:
+ -----------
+ asArray()            - answer me as JavaScript array
+ asText()            - answer my elements (recursively) concatenated
+ */
 
 // List instance creation:
 
@@ -160,10 +160,10 @@ List.prototype.cdr = function () {
 // List array setters:
 
 List.prototype.add = function (element, index) {
-/*
-    insert the element before the given slot index,
-    if no index is specifed, append the element
-*/
+    /*
+     insert the element before the given slot index,
+     if no index is specifed, append the element
+     */
     var idx = index || this.length() + 1,
         obj = isNil(element) ? null : element;
 
@@ -175,8 +175,8 @@ List.prototype.add = function (element, index) {
 List.prototype.put = function (element, index) {
     // exchange the element at the given slot for another
     var data = element === 0 ? 0
-            : element === false ? false
-                    : element || null;
+        : element === false ? false
+            : element || null;
 
     this.becomeArray();
     this.contents[index - 1] = data;
@@ -250,11 +250,17 @@ List.prototype.isTable = function () {
 List.prototype.get = function (col, row) {
     var r, len, cols;
     if (!col) {
-        if (!row) {return [this.length()]; }
-        if (row > this.rows()) {return null; }
+        if (!row) {
+            return [this.length()];
+        }
+        if (row > this.rows()) {
+            return null;
+        }
         return this.rowName(row);
     } else if (!row) {
-        if (this.cols() === 1) {return localize('items'); }
+        if (this.cols() === 1) {
+            return localize('items');
+        }
         return this.colName(col);
     }
     r = this.at(row);
@@ -288,7 +294,9 @@ List.prototype.cols = function () {
 };
 
 List.prototype.colName = function (col) {
-    if (col > this.cols()) {return null; }
+    if (col > this.cols()) {
+        return null;
+    }
     return String.fromCharCode(64 + ((col % 26) || 26)).repeat(
         Math.floor((col - 1) / 26) + 1
     );
@@ -449,9 +457,9 @@ List.prototype.equalTo = function (other) {
 // ListWatcherMorph ////////////////////////////////////////////////////
 
 /*
-    I am a little window which observes a list and continuously
-    updates itself accordingly
-*/
+ I am a little window which observes a list and continuously
+ updates itself accordingly
+ */
 
 // ListWatcherMorph inherits from BoxMorph:
 
@@ -491,7 +499,9 @@ ListWatcherMorph.prototype.init = function (list, parentCell) {
         MorphicPreferences.isFlat ? new Point() : new Point(1, 1),
         new Color(255, 255, 255)
     );
-    this.label.mouseClickLeft = function () {myself.startIndexMenu(); };
+    this.label.mouseClickLeft = function () {
+        myself.startIndexMenu();
+    };
 
 
     this.frame = new ScrollFrameMorph(null, 10);
@@ -512,7 +522,9 @@ ListWatcherMorph.prototype.init = function (list, parentCell) {
         'down',
         SyntaxElementMorph.prototype.fontSize
     );
-    this.arrow.mouseClickLeft = function () {myself.startIndexMenu(); };
+    this.arrow.mouseClickLeft = function () {
+        myself.startIndexMenu();
+    };
     this.arrow.setRight(this.handle.right());
     this.arrow.setBottom(this.handle.top());
     this.handle.add(this.arrow);
@@ -576,7 +588,7 @@ ListWatcherMorph.prototype.update = function (anyway) {
         Math.min(
             this.start,
             Math.floor((this.list.length() - 1) / this.range)
-                * this.range + 1
+            * this.range + 1
         ),
         1
     );
@@ -710,7 +722,9 @@ ListWatcherMorph.prototype.startIndexMenu = function () {
         myself = this,
         items = Math.ceil(this.list.length() / this.range),
         menu = new MenuMorph(
-            function (idx) {myself.setStartIndex(idx); },
+            function (idx) {
+                myself.setStartIndex(idx);
+            },
             null,
             myself
         );
@@ -728,7 +742,9 @@ ListWatcherMorph.prototype.setStartIndex = function (index) {
 };
 
 ListWatcherMorph.prototype.fixLayout = function () {
-    if (!this.label) {return; }
+    if (!this.label) {
+        return;
+    }
     Morph.prototype.trackChanges = false;
     if (this.frame) {
         this.arrangeCells();
@@ -814,7 +830,9 @@ ListWatcherMorph.prototype.showTableView = function () {
         SpeechBubbleMorph,
         CellMorph
     ]);
-    if (!view) {return; }
+    if (!view) {
+        return;
+    }
     if (view instanceof SpriteBubbleMorph) {
         view.changed();
         view.drawNew(true);

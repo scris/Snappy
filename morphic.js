@@ -1,1137 +1,1137 @@
 /*
 
-    morphic.js
-
-    a lively Web-GUI
-    inspired by Squeak
-
-    written by Jens Mönig
-    jens@moenig.org
-
-    Copyright (C) 2017 by Jens Mönig
-
-    This file is part of Snap!.
-
-    Snap! is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of
-    the License, or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-    documentation contents
-    ----------------------
-    I. inheritance hierarchy
-    II. object definition toc
-    III. yet to implement
-    IV. open issues
-    V. browser compatibility
-    VI. the big picture
-    VII. programming guide
-        (1) setting up a web page
-            (a) single world
-            (b) multiple worlds
-            (c) an application
-        (2) manipulating morphs
-        (3) events
-            (a) mouse events
-            (b) context menu
-            (c) dragging
-            (d) dropping
-            (e) keyboard events
-            (f) resize event
-            (g) combined mouse-keyboard events
-            (h) text editing events
-        (4) stepping
-        (5) creating new kinds of morphs
-        (6) development and user modes
-        (7) turtle graphics
-        (8) damage list housekeeping
-        (9) supporting high-resolution "retina" screens
-        (10 animations
-        (11) minifying morphic.js
-    VIII. acknowledgements
-    IX. contributors
-
-
-    I. hierarchy
-    -------------
-    the following tree lists all constructors hierarchically,
-    indentation indicating inheritance. Refer to this list to get a
-    contextual overview:
-
-    Animation
-    Color
-    Node
-        Morph
-            BlinkerMorph
-                CursorMorph
-            BouncerMorph*
-            BoxMorph
-                InspectorMorph
-                MenuMorph
-                MouseSensorMorph*
-                SpeechBubbleMorph
-            CircleBoxMorph
-                SliderButtonMorph
-                SliderMorph
-            ColorPaletteMorph
-                GrayPaletteMorph
-            ColorPickerMorph
-            FrameMorph
-                ScrollFrameMorph
-                    ListMorph
-                StringFieldMorph
-                WorldMorph
-            HandleMorph
-            HandMorph
-            PenMorph
-            ShadowMorph
-            StringMorph
-            TextMorph
-            TriggerMorph
-                MenuItemMorph
-    Point
-    Rectangle
-
+ morphic.js
+
+ a lively Web-GUI
+ inspired by Squeak
+
+ written by Jens Mönig
+ jens@moenig.org
+
+ Copyright (C) 2017 by Jens Mönig
+
+ This file is part of Snap!.
+
+ Snap! is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of
+ the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+ documentation contents
+ ----------------------
+ I. inheritance hierarchy
+ II. object definition toc
+ III. yet to implement
+ IV. open issues
+ V. browser compatibility
+ VI. the big picture
+ VII. programming guide
+ (1) setting up a web page
+ (a) single world
+ (b) multiple worlds
+ (c) an application
+ (2) manipulating morphs
+ (3) events
+ (a) mouse events
+ (b) context menu
+ (c) dragging
+ (d) dropping
+ (e) keyboard events
+ (f) resize event
+ (g) combined mouse-keyboard events
+ (h) text editing events
+ (4) stepping
+ (5) creating new kinds of morphs
+ (6) development and user modes
+ (7) turtle graphics
+ (8) damage list housekeeping
+ (9) supporting high-resolution "retina" screens
+ (10 animations
+ (11) minifying morphic.js
+ VIII. acknowledgements
+ IX. contributors
+
+
+ I. hierarchy
+ -------------
+ the following tree lists all constructors hierarchically,
+ indentation indicating inheritance. Refer to this list to get a
+ contextual overview:
+
+ Animation
+ Color
+ Node
+ Morph
+ BlinkerMorph
+ CursorMorph
+ BouncerMorph*
+ BoxMorph
+ InspectorMorph
+ MenuMorph
+ MouseSensorMorph*
+ SpeechBubbleMorph
+ CircleBoxMorph
+ SliderButtonMorph
+ SliderMorph
+ ColorPaletteMorph
+ GrayPaletteMorph
+ ColorPickerMorph
+ FrameMorph
+ ScrollFrameMorph
+ ListMorph
+ StringFieldMorph
+ WorldMorph
+ HandleMorph
+ HandMorph
+ PenMorph
+ ShadowMorph
+ StringMorph
+ TextMorph
+ TriggerMorph
+ MenuItemMorph
+ Point
+ Rectangle
+
 
-    II. toc
-    -------
-    the following list shows the order in which all constructors are
-    defined. Use this list to locate code in this document:
-
-    Global settings
-    Global functions
-
-    Animation
-    Color
-    Point
-    Rectangle
-    Node
-    Morph
-    ShadowMorph
-    HandleMorph
-    PenMorph
-    ColorPaletteMorph
-    GrayPaletteMorph
-    ColorPickerMorph
-    BlinkerMorph
-    CursorMorph
-    BoxMorph
-    SpeechBubbleMorph
-    CircleBoxMorph
-    SliderButtonMorph
-    SliderMorph
-    MouseSensorMorph*
-    InspectorMorph
-    MenuMorph
-    StringMorph
-    TextMorph
-    TriggerMorph
-    MenuItemMorph
-    FrameMorph
-    ScrollFrameMorph
-    ListMorph
-    StringFieldMorph
-    BouncerMorph*
-    HandMorph
-    WorldMorph
-
-    * included only for demo purposes
-
-
-    III. yet to implement
-    ---------------------
-    - keyboard support for scroll frames and lists
-    - full keyboard support for menus (partial support exists)
-    - virtual keyboard support for Android and IE
-
-
-    IV. open issues
-    ----------------
-    - clipboard support (copy & paste) for non-textual data
-
-
-    V. browser compatibility
-    ------------------------
-    I have taken great care and considerable effort to make morphic.js
-    runnable and appearing exactly the same on all current browsers
-    available to me:
-
-    - Firefox for Windows
-    - Firefox for Mac
-    - Firefox for Android
-    - Chrome for Windows
-    - Chrome for Mac
-    - Chrome for Android
-    - Safari for Windows (deprecated)
-    - safari for Mac
-    - Safari for iOS (mobile)
-    - IE for Windows
-    - Edge for Windows
-    - Opera for Windows
-    - Opera for Mac
-
-
-    VI. the big picture
-    -------------------
-    Morphic.js is completely based on Canvas and JavaScript, it is just
-    Morphic, nothing else. Morphic.js is very basic and covers only the
-    bare essentials:
-
-        * a stepping mechanism (a time-sharing multiplexer for lively
-          user interaction ontop of a single OS/browser thread)
-        * progressive display updates (only dirty rectangles are
-          redrawn in each display cycle)
-        * a tree structure
-        * a single World per Canvas element (although you can have
-          multiple worlds in multiple Canvas elements on the same web
-          page)
-        * a single Hand per World (but you can support multi-touch
-          events)
-        * a single text entry focus per World
-
-    In its current state morphic.js doesn't support Transforms (you
-    cannot rotate Morphs), but with PenMorph there already is a simple
-    LOGO-like turtle that you can use to draw onto any Morph it is
-    attached to. I'm planning to add special Morphs that support these
-    operations later on, but not for every Morph in the system.
-    Therefore these additions ("sprites" etc.) are likely to be part of
-    other libraries ("microworld.js") in separate files.
-
-    the purpose of morphic.js is to provide a malleable framework that
-    will let me experiment with lively GUIs for my hobby horse, which
-    is drag-and-drop, blocks based programming languages. Those things
-    (BYOB4 - http://byob.berkeley.edu) will be written using morphic.js
-    as a library.
-
-
-    VII. programming guide
-    ----------------------
-    Morphic.js provides a library for lively GUIs inside single HTML
-    Canvas elements. Each such canvas element functions as a "world" in
-    which other visible shapes ("morphs") can be positioned and
-    manipulated, often directly and interactively by the user. Morphs
-    are tree nodes and may contain any number of submorphs ("children").
-
-    All things visible in a morphic World are morphs themselves, i.e.
-    all text rendering, blinking cursors, entry fields, menus, buttons,
-    sliders, windows and dialog boxes etc. are created with morphic.js
-    rather than using HTML DOM elements, and as a consequence can be
-    changed and adjusted by the programmer regardless of proprietary
-    browser behavior.
-
-    Each World has an - invisible - "Hand" resembling the mouse cursor
-    (or the user's finger on touch screens) which handles mouse events,
-    and may also have a keyboardReceiver to handle key events.
-
-    The basic idea of Morphic is to continuously run display cycles and
-    to incrementally update the screen by only redrawing those  World
-    regions    which have been "dirtied" since the last redraw. Before
-    each shape is processed for redisplay it gets the chance to perform
-    a "step" procedure, thus allowing for an illusion of concurrency.
-
-
-    (1) setting up a web page
-    -------------------------
-    Setting up a web page for Morphic always involves three steps:
-    adding one or more Canvas elements, defining one or more worlds,
-    initializing and starting the main loop.
-
-
-    (a) single world
-    -----------------
-    Most commonly you will want your World to fill the browsers's whole
-    client area. This default situation is easiest and most straight
-    forward.
-
-    example html file:
-
-    <!DOCTYPE html>
-    <html>
-        <head>
-            <title>Morphic!</title>
-            <script type="text/javascript" src="morphic.js"></script>
-            <script type="text/javascript">
-                var world;
-
-                window.onload = function () {
-                    world = new WorldMorph(
-                        document.getElementById('world'));
-                    loop();
-                };
-
-                function loop() {
-                    requestAnimationFrame(loop);
-                    world.doOneCycle();
-                }
-            </script>
-        </head>
-        <body>
-            <canvas id="world" tabindex="1" width="800" height="600">
-                <p>Your browser doesn't support canvas.</p>
-            </canvas>
-        </body>
-    </html>
-
-    if you use ScrollFrames or otherwise plan to support mouse wheel
-    scrolling events, you might also add the following inline-CSS
-    attribute to the Canvas element:
-
-        style="position: absolute;"
-
-    which will prevent the World to be scrolled around instead of the
-    elements inside of it in some browsers.
-
-
-    (b) multiple worlds
-    -------------------
-    If you wish to create a web page with more than one world, make
-    sure to prevent each world from auto-filling the whole page and
-    include    it in the main loop. It's also a good idea to give each
-    world its own tabindex:
-
-    example html file:
-
-    <!DOCTYPE html>
-    <html>
-        <head>
-            <title>Morphic!</title>
-            <script type="text/javascript" src="morphic.js"></script>
-            <script type="text/javascript">
-                var world1, world2;
-
-                window.onload = function () {
-                    world1 = new WorldMorph(
-                        document.getElementById('world1'), false);
-                    world2 = new WorldMorph(
-                        document.getElementById('world2'), false);
-                    loop();
-                };
-
-                function loop() {
-                    requestAnimationFrame(loop);
-                    world1.doOneCycle();
-                    world2.doOneCycle();
-                }
-            </script>
-        </head>
-        <body>
-            <p>first world:</p>
-            <canvas id="world1" tabindex="1" width="600" height="400">
-                <p>Your browser doesn't support canvas.</p>
-            </canvas>
-            <p>second world:</p>
-            <canvas id="world2" tabindex="2" width="400" height="600">
-                <p>Your browser doesn't support canvas.</p>
-            </canvas>
-        </body>
-    </html>
-
-
-    (c) an application
-    -------------------
-    Of course, most of the time you don't want to just plain use the
-    standard Morphic World "as is" out of the box, but write your own
-    application (something like Scratch!) in it. For such an
-    application you'll create your own morph prototypes, perhaps
-    assemble your own "window frame" and bring it all to life in a
-    customized World state. the following example creates a simple
-    snake-like mouse drawing game.
-
-    example html file:
-
-    <!DOCTYPE html>
-    <html>
-        <head>
-            <title>touch me!</title>
-            <script type="text/javascript" src="morphic.js"></script>
-            <script type="text/javascript">
-                var worldCanvas, sensor;
-
-                window.onload = function () {
-                    var x, y, w, h;
-
-                    worldCanvas = document.getElementById('world');
-                    world = new WorldMorph(worldCanvas);
-                    world.isDevMode = false;
-                    world.color = new Color();
-
-                    w = 100;
-                    h = 100;
-
-                    x = 0;
-                    y = 0;
-
-                    while ((y * h) < world.height()) {
-                        while ((x * w) < world.width()) {
-                            sensor = new MouseSensorMorph();
-                            sensor.setPosition(new Point(x * w, y * h));
-                            sensor.alpha = 0;
-                            sensor.setExtent(new Point(w, h));
-                            world.add(sensor);
-                            x += 1;
-                        }
-                        x = 0;
-                        y += 1;
-                    }
-                    loop();
-                };
-
-                function loop() {
-                    requestAnimationFrame(loop);
-                    world.doOneCycle();
-                }
-            </script>
-        </head>
-        <body bgcolor='black'>
-            <canvas id="world" width="800" height="600">
-                <p>Your browser doesn't support canvas.</p>
-            </canvas>
-        </body>
-    </html>
-
-    To get an idea how you can craft your own custom morph prototypes
-    I've included two examples which should give you an idea how to add
-    properties, override inherited methods and use the stepping
-    mechanism for "livelyness":
-
-        BouncerMorph
-        MouseSensorMorph
-
-    For the sake of sharing a single file I've included those examples
-    in morphic.js itself. Usually you'll define your additions in a
-    separate file and keep morphic.js untouched.
-
-
-    (2) manipulating morphs
-    -----------------------
-    There are many methods to programmatically manipulate morphs. Among
-    the most important and common ones among all morphs are the
-    following nine:
-
-    * hide()
-    * show()
-
-    * setPosition(aPoint)
-    * setExtent(aPoint)
-    * setColor(aColor)
-
-    * add(submorph)            - attaches submorph ontop
-    * addBack(submorph)        - attaches submorph underneath
-
-    * fullCopy()               - duplication
-    * destroy()                - deletion
-
-
-    (3) events
-    ----------
-    All user (and system) interaction is triggered by events, which are
-    passed on from the root element - the World - to its submorphs. The
-    World contains a list of system (browser) events it reacts to in its
-
-        initEventListeners()
-
-    method. Currently there are
-
-        - mouse
-        - drop
-        - keyboard
-        - (window) resize
-
-    events.
-
-    These system events are dispatched within the morphic World by the
-    World's Hand and its keyboardReceiver (usually the active text
-    cursor).
-
-
-    (a) mouse events:
-    -----------------
-    The Hand dispatches the following mouse events to relevant morphs:
-
-        mouseDownLeft
-        mouseDownRight
-        mouseClickLeft
-        mouseClickRight
-        mouseDoubleClick
-        mouseEnter
-        mouseLeave
-        mouseEnterDragging
-        mouseLeaveDragging
-        mouseMove
-        mouseScroll
-
-    If you wish your morph to react to any such event, simply add a
-    method of the same name as the event, e.g:
-
-        MyMorph.prototype.mouseMove = function(pos) {};
-
-    All of these methods have as optional parameter a Point object
-    indicating the current position of the Hand inside the World's
-    coordinate system. The
-
-        mouseMove(pos, button)
-
-    event method has an additional optional parameter indicating the
-    currently pressed mouse button, which is either 'left' or 'right'.
-    You can use this to let users interact with 3D environments.
-
-    Events may be "bubbled" up a morph's owner chain by calling
-
-        this.escalateEvent(functionName, arg)
-
-    in the event handler method's code.
-
-    Likewise, removing the event handler method will render your morph
-    passive to the event in question.
-
-
-    (b) context menu:
-    -----------------
-    By default right-clicking (or single-finger tap-and-hold) on a morph
-    also invokes its context menu (in addition to firing the
-    mouseClickRight event). A morph's context menu can be customized by
-    assigning a Menu instance to its
-
-        customContextMenu
-
-    property, or altogether suppressed by overriding its inherited
-
-        contextMenu()
-
-    method.
-
-
-    (c) dragging:
-    -------------
-    Dragging a morph is initiated when the left mouse button is pressed,
-    held and the mouse is moved.
-
-    You can control whether a morph is draggable by setting its
-
-        isDraggable
-
-    property either to false or true. If a morph isn't draggable itself
-    it will pass the pick-up request up its owner chain. This lets you
-    create draggable composite morphs like Windows, DialogBoxes,
-    Sliders etc.
-
-    Sometimes it is desireable to make "template" shapes which cannot be
-    moved themselves, but from which instead duplicates can be peeled
-    off. This is especially useful for building blocks in construction
-    kits, e.g. the MIT-Scratch palette. Morphic.js lets you control this
-    functionality by setting the
-
-        isTemplate
-
-    property flag to true for any morph whose "isDraggable" property is
-    turned off. When dragging such a Morph the hand will instead grab
-    a duplicate of the template whose "isDraggable" flag is true and
-    whose "isTemplate" flag is false, in other words: a non-template.
-
-    When creating a copy from a template, the copy's
-
-        reactToTemplateCopy
-
-    is invoked, if it is present.
-
-    Dragging is indicated by adding a drop shadow to the morph in hand.
-    If a morph follows the hand without displaying a drop shadow it is
-    merely being moved about without changing its parent (owner morph),
-    e.g. when "dragging" a morph handle to resize its owner, or when
-    "dragging" a slider button.
-
-    Right before a morph is picked up its
-
-        prepareToBeGrabbed(handMorph)
-
-    method is invoked, if it is present. Immediately after the pick-up
-    the former parent's
-
-        reactToGrabOf(grabbedMorph)
-
-    method is called, again only if it exists.
-
-    Similar to events, these  methods are optional and don't exist by
-    default. For a simple example of how they can be used to adjust
-    scroll bars in a scroll frame please have a look at their
-    implementation in FrameMorph.
-
-
-    (d) dropping:
-    -------------
-    Dropping is triggered when the left mouse button is either pressed
-    or released while the Hand is dragging a morph.
-
-    Dropping a morph causes it to become embedded in a new owner morph.
-    You can control this embedding behavior by setting the prospective
-    drop target's
-
-        acceptsDrops
-
-    property to either true or false, or by overriding its inherited
-
-        wantsDropOf(aMorph)
-
-    method.
-
-    Right after a morph has been dropped its
-
-        justDropped(handMorph)
-
-    method is called, and its new parent's
-
-        reactToDropOf(droppedMorph, handMorph)
-
-    method is invoked, again only if each method exists.
-
-    Similar to events, these  methods are optional and by default are
-    not present in morphs by default (watch out for inheritance,
-    though!). For a simple example of how they can be used to adjust
-    scroll bars in a scroll frame please have a look at their
-    implementation in FrameMorph.
-
-    Drops of image elements from outside the world canvas are dispatched as
-
-        droppedImage(aCanvas, name)
-        droppedSVG(anImage, name)
-
-    events to interested Morphs at the mouse pointer. If you want you Morph
-    to e.g. import outside images you can add the droppedImage() and / or the
-    droppedSVG() methods to it. The parameter passed to the event handles is
-    a new offscreen canvas element representing a copy of the original image
-    element which can be directly used, e.g. by assigning it to another
-    Morph's image property. In the case of a dropped SVG it is an image
-    element (not a canvas), which has to be rasterized onto a canvas before
-    it can be used. The benefit of handling SVGs as image elements is that
-    rasterization can be deferred until the destination scale is known, taking
-    advantage of SVG's ability for smooth scaling. If instead SVGs are to be
-    rasterized right away, you can set the
-
-        MorphicPreferences.rasterizeSVGs
-
-    preference to <true>. In this case dropped SVGs also trigger the
-    droppedImage() event with a canvas containing a rasterized version of the
-    SVG.
-
-    The same applies to drops of audio or text files from outside the world
-    canvas.
-
-    Those are dispatched as
-
-        droppedAudio(anAudio, name)
-        droppedText(aString, name)
-
-    events to interested Morphs at the mouse pointer.
-
-    if none of the above content types can be determined, the file contents
-    is dispatched as an ArrayBuffer to interested Morphs:
-
-        droppedBinary(anArrayBuffer, name)
-
-
-    (e) keyboard events
-    -------------------
-    The World dispatches the following key events to its active
-    keyboardReceiver:
-
-        keypress
-        keydown
-        keyup
-
-    Currently the only morph which acts as keyboard receiver is
-    CursorMorph, the basic text editing widget. If you wish to add
-    keyboard support to your morph you need to add event handling
-    methods for
-
-        processKeyPress(event)
-        processKeyDown(event)
-        processKeyUp(event)
-
-    and activate them by assigning your morph to the World's
-
-        keyboardReceiver
-
-    property.
-
-    Note that processKeyUp() is optional and doesn't have to be present
-    if your morph doesn't require it.
-
-
-    (f) resize event
-    ----------------
-    The Window resize event is handled by the World and allows the
-    World's extent to be adjusted so that it always completely fills
-    the browser's visible page. You can turn off this default behavior
-    by setting the World's
-
-        useFillPage
-
-    property to false.
-
-    Alternatively you can also initialize the World with the
-    useFillPage switch turned off from the beginning by passing the
-    false value as second parameter to the World's constructor:
-
-        world = new World(aCanvas, false);
-
-    Use this when creating a web page with multiple Worlds.
+ II. toc
+ -------
+ the following list shows the order in which all constructors are
+ defined. Use this list to locate code in this document:
+
+ Global settings
+ Global functions
+
+ Animation
+ Color
+ Point
+ Rectangle
+ Node
+ Morph
+ ShadowMorph
+ HandleMorph
+ PenMorph
+ ColorPaletteMorph
+ GrayPaletteMorph
+ ColorPickerMorph
+ BlinkerMorph
+ CursorMorph
+ BoxMorph
+ SpeechBubbleMorph
+ CircleBoxMorph
+ SliderButtonMorph
+ SliderMorph
+ MouseSensorMorph*
+ InspectorMorph
+ MenuMorph
+ StringMorph
+ TextMorph
+ TriggerMorph
+ MenuItemMorph
+ FrameMorph
+ ScrollFrameMorph
+ ListMorph
+ StringFieldMorph
+ BouncerMorph*
+ HandMorph
+ WorldMorph
+
+ * included only for demo purposes
+
+
+ III. yet to implement
+ ---------------------
+ - keyboard support for scroll frames and lists
+ - full keyboard support for menus (partial support exists)
+ - virtual keyboard support for Android and IE
+
+
+ IV. open issues
+ ----------------
+ - clipboard support (copy & paste) for non-textual data
+
+
+ V. browser compatibility
+ ------------------------
+ I have taken great care and considerable effort to make morphic.js
+ runnable and appearing exactly the same on all current browsers
+ available to me:
+
+ - Firefox for Windows
+ - Firefox for Mac
+ - Firefox for Android
+ - Chrome for Windows
+ - Chrome for Mac
+ - Chrome for Android
+ - Safari for Windows (deprecated)
+ - safari for Mac
+ - Safari for iOS (mobile)
+ - IE for Windows
+ - Edge for Windows
+ - Opera for Windows
+ - Opera for Mac
+
+
+ VI. the big picture
+ -------------------
+ Morphic.js is completely based on Canvas and JavaScript, it is just
+ Morphic, nothing else. Morphic.js is very basic and covers only the
+ bare essentials:
+
+ * a stepping mechanism (a time-sharing multiplexer for lively
+ user interaction ontop of a single OS/browser thread)
+ * progressive display updates (only dirty rectangles are
+ redrawn in each display cycle)
+ * a tree structure
+ * a single World per Canvas element (although you can have
+ multiple worlds in multiple Canvas elements on the same web
+ page)
+ * a single Hand per World (but you can support multi-touch
+ events)
+ * a single text entry focus per World
+
+ In its current state morphic.js doesn't support Transforms (you
+ cannot rotate Morphs), but with PenMorph there already is a simple
+ LOGO-like turtle that you can use to draw onto any Morph it is
+ attached to. I'm planning to add special Morphs that support these
+ operations later on, but not for every Morph in the system.
+ Therefore these additions ("sprites" etc.) are likely to be part of
+ other libraries ("microworld.js") in separate files.
+
+ the purpose of morphic.js is to provide a malleable framework that
+ will let me experiment with lively GUIs for my hobby horse, which
+ is drag-and-drop, blocks based programming languages. Those things
+ (BYOB4 - http://byob.berkeley.edu) will be written using morphic.js
+ as a library.
+
+
+ VII. programming guide
+ ----------------------
+ Morphic.js provides a library for lively GUIs inside single HTML
+ Canvas elements. Each such canvas element functions as a "world" in
+ which other visible shapes ("morphs") can be positioned and
+ manipulated, often directly and interactively by the user. Morphs
+ are tree nodes and may contain any number of submorphs ("children").
+
+ All things visible in a morphic World are morphs themselves, i.e.
+ all text rendering, blinking cursors, entry fields, menus, buttons,
+ sliders, windows and dialog boxes etc. are created with morphic.js
+ rather than using HTML DOM elements, and as a consequence can be
+ changed and adjusted by the programmer regardless of proprietary
+ browser behavior.
+
+ Each World has an - invisible - "Hand" resembling the mouse cursor
+ (or the user's finger on touch screens) which handles mouse events,
+ and may also have a keyboardReceiver to handle key events.
+
+ The basic idea of Morphic is to continuously run display cycles and
+ to incrementally update the screen by only redrawing those  World
+ regions    which have been "dirtied" since the last redraw. Before
+ each shape is processed for redisplay it gets the chance to perform
+ a "step" procedure, thus allowing for an illusion of concurrency.
+
+
+ (1) setting up a web page
+ -------------------------
+ Setting up a web page for Morphic always involves three steps:
+ adding one or more Canvas elements, defining one or more worlds,
+ initializing and starting the main loop.
+
+
+ (a) single world
+ -----------------
+ Most commonly you will want your World to fill the browsers's whole
+ client area. This default situation is easiest and most straight
+ forward.
+
+ example html file:
+
+ <!DOCTYPE html>
+ <html>
+ <head>
+ <title>Morphic!</title>
+ <script type="text/javascript" src="morphic.js"></script>
+ <script type="text/javascript">
+ var world;
+
+ window.onload = function () {
+ world = new WorldMorph(
+ document.getElementById('world'));
+ loop();
+ };
+
+ function loop() {
+ requestAnimationFrame(loop);
+ world.doOneCycle();
+ }
+ </script>
+ </head>
+ <body>
+ <canvas id="world" tabindex="1" width="800" height="600">
+ <p>Your browser doesn't support canvas.</p>
+ </canvas>
+ </body>
+ </html>
+
+ if you use ScrollFrames or otherwise plan to support mouse wheel
+ scrolling events, you might also add the following inline-CSS
+ attribute to the Canvas element:
+
+ style="position: absolute;"
+
+ which will prevent the World to be scrolled around instead of the
+ elements inside of it in some browsers.
+
+
+ (b) multiple worlds
+ -------------------
+ If you wish to create a web page with more than one world, make
+ sure to prevent each world from auto-filling the whole page and
+ include    it in the main loop. It's also a good idea to give each
+ world its own tabindex:
+
+ example html file:
+
+ <!DOCTYPE html>
+ <html>
+ <head>
+ <title>Morphic!</title>
+ <script type="text/javascript" src="morphic.js"></script>
+ <script type="text/javascript">
+ var world1, world2;
+
+ window.onload = function () {
+ world1 = new WorldMorph(
+ document.getElementById('world1'), false);
+ world2 = new WorldMorph(
+ document.getElementById('world2'), false);
+ loop();
+ };
+
+ function loop() {
+ requestAnimationFrame(loop);
+ world1.doOneCycle();
+ world2.doOneCycle();
+ }
+ </script>
+ </head>
+ <body>
+ <p>first world:</p>
+ <canvas id="world1" tabindex="1" width="600" height="400">
+ <p>Your browser doesn't support canvas.</p>
+ </canvas>
+ <p>second world:</p>
+ <canvas id="world2" tabindex="2" width="400" height="600">
+ <p>Your browser doesn't support canvas.</p>
+ </canvas>
+ </body>
+ </html>
+
+
+ (c) an application
+ -------------------
+ Of course, most of the time you don't want to just plain use the
+ standard Morphic World "as is" out of the box, but write your own
+ application (something like Scratch!) in it. For such an
+ application you'll create your own morph prototypes, perhaps
+ assemble your own "window frame" and bring it all to life in a
+ customized World state. the following example creates a simple
+ snake-like mouse drawing game.
+
+ example html file:
+
+ <!DOCTYPE html>
+ <html>
+ <head>
+ <title>touch me!</title>
+ <script type="text/javascript" src="morphic.js"></script>
+ <script type="text/javascript">
+ var worldCanvas, sensor;
+
+ window.onload = function () {
+ var x, y, w, h;
+
+ worldCanvas = document.getElementById('world');
+ world = new WorldMorph(worldCanvas);
+ world.isDevMode = false;
+ world.color = new Color();
+
+ w = 100;
+ h = 100;
+
+ x = 0;
+ y = 0;
+
+ while ((y * h) < world.height()) {
+ while ((x * w) < world.width()) {
+ sensor = new MouseSensorMorph();
+ sensor.setPosition(new Point(x * w, y * h));
+ sensor.alpha = 0;
+ sensor.setExtent(new Point(w, h));
+ world.add(sensor);
+ x += 1;
+ }
+ x = 0;
+ y += 1;
+ }
+ loop();
+ };
+
+ function loop() {
+ requestAnimationFrame(loop);
+ world.doOneCycle();
+ }
+ </script>
+ </head>
+ <body bgcolor='black'>
+ <canvas id="world" width="800" height="600">
+ <p>Your browser doesn't support canvas.</p>
+ </canvas>
+ </body>
+ </html>
+
+ To get an idea how you can craft your own custom morph prototypes
+ I've included two examples which should give you an idea how to add
+ properties, override inherited methods and use the stepping
+ mechanism for "livelyness":
+
+ BouncerMorph
+ MouseSensorMorph
+
+ For the sake of sharing a single file I've included those examples
+ in morphic.js itself. Usually you'll define your additions in a
+ separate file and keep morphic.js untouched.
+
+
+ (2) manipulating morphs
+ -----------------------
+ There are many methods to programmatically manipulate morphs. Among
+ the most important and common ones among all morphs are the
+ following nine:
+
+ * hide()
+ * show()
+
+ * setPosition(aPoint)
+ * setExtent(aPoint)
+ * setColor(aColor)
+
+ * add(submorph)            - attaches submorph ontop
+ * addBack(submorph)        - attaches submorph underneath
+
+ * fullCopy()               - duplication
+ * destroy()                - deletion
+
+
+ (3) events
+ ----------
+ All user (and system) interaction is triggered by events, which are
+ passed on from the root element - the World - to its submorphs. The
+ World contains a list of system (browser) events it reacts to in its
+
+ initEventListeners()
+
+ method. Currently there are
+
+ - mouse
+ - drop
+ - keyboard
+ - (window) resize
+
+ events.
+
+ These system events are dispatched within the morphic World by the
+ World's Hand and its keyboardReceiver (usually the active text
+ cursor).
+
+
+ (a) mouse events:
+ -----------------
+ The Hand dispatches the following mouse events to relevant morphs:
+
+ mouseDownLeft
+ mouseDownRight
+ mouseClickLeft
+ mouseClickRight
+ mouseDoubleClick
+ mouseEnter
+ mouseLeave
+ mouseEnterDragging
+ mouseLeaveDragging
+ mouseMove
+ mouseScroll
+
+ If you wish your morph to react to any such event, simply add a
+ method of the same name as the event, e.g:
+
+ MyMorph.prototype.mouseMove = function(pos) {};
+
+ All of these methods have as optional parameter a Point object
+ indicating the current position of the Hand inside the World's
+ coordinate system. The
+
+ mouseMove(pos, button)
+
+ event method has an additional optional parameter indicating the
+ currently pressed mouse button, which is either 'left' or 'right'.
+ You can use this to let users interact with 3D environments.
+
+ Events may be "bubbled" up a morph's owner chain by calling
+
+ this.escalateEvent(functionName, arg)
+
+ in the event handler method's code.
+
+ Likewise, removing the event handler method will render your morph
+ passive to the event in question.
+
+
+ (b) context menu:
+ -----------------
+ By default right-clicking (or single-finger tap-and-hold) on a morph
+ also invokes its context menu (in addition to firing the
+ mouseClickRight event). A morph's context menu can be customized by
+ assigning a Menu instance to its
+
+ customContextMenu
+
+ property, or altogether suppressed by overriding its inherited
+
+ contextMenu()
+
+ method.
+
+
+ (c) dragging:
+ -------------
+ Dragging a morph is initiated when the left mouse button is pressed,
+ held and the mouse is moved.
+
+ You can control whether a morph is draggable by setting its
+
+ isDraggable
+
+ property either to false or true. If a morph isn't draggable itself
+ it will pass the pick-up request up its owner chain. This lets you
+ create draggable composite morphs like Windows, DialogBoxes,
+ Sliders etc.
+
+ Sometimes it is desireable to make "template" shapes which cannot be
+ moved themselves, but from which instead duplicates can be peeled
+ off. This is especially useful for building blocks in construction
+ kits, e.g. the MIT-Scratch palette. Morphic.js lets you control this
+ functionality by setting the
+
+ isTemplate
+
+ property flag to true for any morph whose "isDraggable" property is
+ turned off. When dragging such a Morph the hand will instead grab
+ a duplicate of the template whose "isDraggable" flag is true and
+ whose "isTemplate" flag is false, in other words: a non-template.
+
+ When creating a copy from a template, the copy's
+
+ reactToTemplateCopy
+
+ is invoked, if it is present.
+
+ Dragging is indicated by adding a drop shadow to the morph in hand.
+ If a morph follows the hand without displaying a drop shadow it is
+ merely being moved about without changing its parent (owner morph),
+ e.g. when "dragging" a morph handle to resize its owner, or when
+ "dragging" a slider button.
+
+ Right before a morph is picked up its
+
+ prepareToBeGrabbed(handMorph)
+
+ method is invoked, if it is present. Immediately after the pick-up
+ the former parent's
+
+ reactToGrabOf(grabbedMorph)
+
+ method is called, again only if it exists.
+
+ Similar to events, these  methods are optional and don't exist by
+ default. For a simple example of how they can be used to adjust
+ scroll bars in a scroll frame please have a look at their
+ implementation in FrameMorph.
+
+
+ (d) dropping:
+ -------------
+ Dropping is triggered when the left mouse button is either pressed
+ or released while the Hand is dragging a morph.
+
+ Dropping a morph causes it to become embedded in a new owner morph.
+ You can control this embedding behavior by setting the prospective
+ drop target's
+
+ acceptsDrops
+
+ property to either true or false, or by overriding its inherited
+
+ wantsDropOf(aMorph)
+
+ method.
+
+ Right after a morph has been dropped its
+
+ justDropped(handMorph)
+
+ method is called, and its new parent's
+
+ reactToDropOf(droppedMorph, handMorph)
+
+ method is invoked, again only if each method exists.
+
+ Similar to events, these  methods are optional and by default are
+ not present in morphs by default (watch out for inheritance,
+ though!). For a simple example of how they can be used to adjust
+ scroll bars in a scroll frame please have a look at their
+ implementation in FrameMorph.
+
+ Drops of image elements from outside the world canvas are dispatched as
+
+ droppedImage(aCanvas, name)
+ droppedSVG(anImage, name)
+
+ events to interested Morphs at the mouse pointer. If you want you Morph
+ to e.g. import outside images you can add the droppedImage() and / or the
+ droppedSVG() methods to it. The parameter passed to the event handles is
+ a new offscreen canvas element representing a copy of the original image
+ element which can be directly used, e.g. by assigning it to another
+ Morph's image property. In the case of a dropped SVG it is an image
+ element (not a canvas), which has to be rasterized onto a canvas before
+ it can be used. The benefit of handling SVGs as image elements is that
+ rasterization can be deferred until the destination scale is known, taking
+ advantage of SVG's ability for smooth scaling. If instead SVGs are to be
+ rasterized right away, you can set the
+
+ MorphicPreferences.rasterizeSVGs
+
+ preference to <true>. In this case dropped SVGs also trigger the
+ droppedImage() event with a canvas containing a rasterized version of the
+ SVG.
+
+ The same applies to drops of audio or text files from outside the world
+ canvas.
+
+ Those are dispatched as
+
+ droppedAudio(anAudio, name)
+ droppedText(aString, name)
+
+ events to interested Morphs at the mouse pointer.
+
+ if none of the above content types can be determined, the file contents
+ is dispatched as an ArrayBuffer to interested Morphs:
+
+ droppedBinary(anArrayBuffer, name)
+
+
+ (e) keyboard events
+ -------------------
+ The World dispatches the following key events to its active
+ keyboardReceiver:
+
+ keypress
+ keydown
+ keyup
+
+ Currently the only morph which acts as keyboard receiver is
+ CursorMorph, the basic text editing widget. If you wish to add
+ keyboard support to your morph you need to add event handling
+ methods for
+
+ processKeyPress(event)
+ processKeyDown(event)
+ processKeyUp(event)
+
+ and activate them by assigning your morph to the World's
+
+ keyboardReceiver
+
+ property.
+
+ Note that processKeyUp() is optional and doesn't have to be present
+ if your morph doesn't require it.
+
+
+ (f) resize event
+ ----------------
+ The Window resize event is handled by the World and allows the
+ World's extent to be adjusted so that it always completely fills
+ the browser's visible page. You can turn off this default behavior
+ by setting the World's
+
+ useFillPage
+
+ property to false.
+
+ Alternatively you can also initialize the World with the
+ useFillPage switch turned off from the beginning by passing the
+ false value as second parameter to the World's constructor:
+
+ world = new World(aCanvas, false);
+
+ Use this when creating a web page with multiple Worlds.
 
-    if "useFillPage" is turned on the World dispatches an
-
-        reactToWorldResize(newBounds)
-
-    events to all of its children (toplevel only), allowing each to
-    adjust to the new World bounds by implementing a corresponding
-    method, the passed argument being the World's new dimensions after
-    completing the resize. By default, the "reactToWorldResize" Method
-    does not exist.
+ if "useFillPage" is turned on the World dispatches an
+
+ reactToWorldResize(newBounds)
+
+ events to all of its children (toplevel only), allowing each to
+ adjust to the new World bounds by implementing a corresponding
+ method, the passed argument being the World's new dimensions after
+ completing the resize. By default, the "reactToWorldResize" Method
+ does not exist.
 
-    Example:
+ Example:
 
-    Add the following method to your Morph to let it automatically
-    fill the whole World, but leave a 10 pixel border uncovered:
+ Add the following method to your Morph to let it automatically
+ fill the whole World, but leave a 10 pixel border uncovered:
 
-        MyMorph.prototype.reactToWorldResize = function (rect) {
-            this.changed();
-            this.bounds = rect.insetBy(10);
-            this.drawNew();
-            this.changed();
-        };
+ MyMorph.prototype.reactToWorldResize = function (rect) {
+ this.changed();
+ this.bounds = rect.insetBy(10);
+ this.drawNew();
+ this.changed();
+ };
 
 
-    (g) combined mouse-keyboard events
-    ----------------------------------
-    Occasionally you'll want an object to react differently to a mouse
-    click or to some other mouse event while the user holds down a key
-    on the keyboard. Such "shift-click", "ctl-click", or "alt-click"
-    events can be implemented by querying the World's
+ (g) combined mouse-keyboard events
+ ----------------------------------
+ Occasionally you'll want an object to react differently to a mouse
+ click or to some other mouse event while the user holds down a key
+ on the keyboard. Such "shift-click", "ctl-click", or "alt-click"
+ events can be implemented by querying the World's
 
-        currentKey
+ currentKey
 
-    property inside the function that reacts to the mouse event. This
-    property stores the keyCode of the key that's currently pressed.
-    Once the key is released by the user it reverts to null.
+ property inside the function that reacts to the mouse event. This
+ property stores the keyCode of the key that's currently pressed.
+ Once the key is released by the user it reverts to null.
 
 
-    (h) text editing events
-    -----------------------
-    Much of Morphic's "liveliness" comes out of allowing text elements
-    (instances of either single-lined StringMorph or multi-lined TextMorph)
-    to be directly manipulated and edited by users. This requires other
-    objects which may have an interest in the text element's state to react
-    appropriately. Therefore text elements and their manipulators emit
-    a stream of events, mostly by "bubbling" them up the text element's
-    owner chain. Text elements' parents are notified about the following
-    events:
+ (h) text editing events
+ -----------------------
+ Much of Morphic's "liveliness" comes out of allowing text elements
+ (instances of either single-lined StringMorph or multi-lined TextMorph)
+ to be directly manipulated and edited by users. This requires other
+ objects which may have an interest in the text element's state to react
+ appropriately. Therefore text elements and their manipulators emit
+ a stream of events, mostly by "bubbling" them up the text element's
+ owner chain. Text elements' parents are notified about the following
+ events:
 
-    Whenever the user presses a key on the keyboard while a text element
-    is being edited, a
+ Whenever the user presses a key on the keyboard while a text element
+ is being edited, a
 
-        reactToKeystroke(event)
+ reactToKeystroke(event)
 
-    is escalated up its parent chain, the "event" parameter being the
-    original one received by the World.
+ is escalated up its parent chain, the "event" parameter being the
+ original one received by the World.
 
-    Once the user has completed the edit, the following events are
-    dispatched:
+ Once the user has completed the edit, the following events are
+ dispatched:
 
-        accept() - <enter> was pressed on a single line of text
-        cancel() - <esc> was pressed on any text element
+ accept() - <enter> was pressed on a single line of text
+ cancel() - <esc> was pressed on any text element
 
-    Note that "accept" only gets triggered by single-line texte elements,
-    as the <enter> key is used to insert line breaks in multi-line
-    elements. Therefore, whenever a text edit is terminated by the user
-    (accepted, cancelled or otherwise),
+ Note that "accept" only gets triggered by single-line texte elements,
+ as the <enter> key is used to insert line breaks in multi-line
+ elements. Therefore, whenever a text edit is terminated by the user
+ (accepted, cancelled or otherwise),
 
-        reactToEdit(StringOrTextMorph)
+ reactToEdit(StringOrTextMorph)
 
-    is triggered.
+ is triggered.
 
-    If the MorphicPreference's
+ If the MorphicPreference's
 
-        useSliderForInput
+ useSliderForInput
 
-    setting is turned on, a slider is popped up underneath the currently
-    edited text element letting the user insert numbers out of the given
-    slider range. Whenever this happens, i.e. whenever the slider is moved
-    or while the slider button is pressed, a stream of
+ setting is turned on, a slider is popped up underneath the currently
+ edited text element letting the user insert numbers out of the given
+ slider range. Whenever this happens, i.e. whenever the slider is moved
+ or while the slider button is pressed, a stream of
 
-        reactToSliderEdit(StringOrTextMorph)
+ reactToSliderEdit(StringOrTextMorph)
 
-    events is dispatched, allowing for "Bret-Victor" style "live coding"
-    applications.
+ events is dispatched, allowing for "Bret-Victor" style "live coding"
+ applications.
 
-    In addition to user-initiated events text elements also emit
-    change notifications to their direct parents whenever their drawNew()
-    method is invoked. That way complex Morphs containing text elements
-    get a chance to react if something about the embedded text has been
-    modified programmatically. These events are:
+ In addition to user-initiated events text elements also emit
+ change notifications to their direct parents whenever their drawNew()
+ method is invoked. That way complex Morphs containing text elements
+ get a chance to react if something about the embedded text has been
+ modified programmatically. These events are:
 
-        layoutChanged() - sent from instances of TextMorph
-        fixLayout() - sent from instances of StringMorph
+ layoutChanged() - sent from instances of TextMorph
+ fixLayout() - sent from instances of StringMorph
 
-    they are different so that Morphs which contain both multi-line and
-    single-line text elements can hold them apart.
+ they are different so that Morphs which contain both multi-line and
+ single-line text elements can hold them apart.
 
 
-    (4) stepping
-    ------------
-    Stepping is what makes Morphic "magical". Two properties control
-    a morph's stepping behavior: the fps attribute and the step()
-    method.
+ (4) stepping
+ ------------
+ Stepping is what makes Morphic "magical". Two properties control
+ a morph's stepping behavior: the fps attribute and the step()
+ method.
 
-    By default the
+ By default the
 
-        step()
+ step()
 
-    method does nothing. As you can see in the examples of BouncerMorph
-    and MouseSensorMorph you can easily override this inherited method
-    to suit your needs.
+ method does nothing. As you can see in the examples of BouncerMorph
+ and MouseSensorMorph you can easily override this inherited method
+ to suit your needs.
 
-    By default the step() method is called once per display cycle.
-    Depending on the number of actively stepping morphs and the
-    complexity of your step() methods this can cause quite a strain on
-    your CPU, and also result in your application behaving differently
-    on slower computers than on fast ones.
+ By default the step() method is called once per display cycle.
+ Depending on the number of actively stepping morphs and the
+ complexity of your step() methods this can cause quite a strain on
+ your CPU, and also result in your application behaving differently
+ on slower computers than on fast ones.
 
-    setting
+ setting
 
-        myMorph.fps
+ myMorph.fps
 
-    to a number lower than the interval for the main loop lets you free
-    system resources (albeit at the cost of a less responsive or slower
-    behavior for this particular morph).
+ to a number lower than the interval for the main loop lets you free
+ system resources (albeit at the cost of a less responsive or slower
+ behavior for this particular morph).
 
 
-    (5) creating new kinds of morphs
-    --------------------------------
-    The real fun begins when you start to create new kinds of morphs
-    with customized shapes. Imagine, e.g. jigsaw puzzle pieces or
-    musical notes. For this you have to override the default
+ (5) creating new kinds of morphs
+ --------------------------------
+ The real fun begins when you start to create new kinds of morphs
+ with customized shapes. Imagine, e.g. jigsaw puzzle pieces or
+ musical notes. For this you have to override the default
 
-        drawNew()
+ drawNew()
 
-    method.
+ method.
 
-    This method creates a new offscreen Canvas and stores it in
-    the morph's
+ This method creates a new offscreen Canvas and stores it in
+ the morph's
 
-        image
+ image
 
-    property.
+ property.
 
-    Use the following template for a start:
+ Use the following template for a start:
 
-        MyMorph.prototype.drawNew = function() {
-            var context;
-            this.image = newCanvas(this.extent());
-            context = this.image.getContext('2d');
-            // use context to paint stuff here
-        };
+ MyMorph.prototype.drawNew = function() {
+ var context;
+ this.image = newCanvas(this.extent());
+ context = this.image.getContext('2d');
+ // use context to paint stuff here
+ };
 
-    If your new morph stores or references to other morphs outside of
-    the submorph tree in other properties, be sure to also override the
-    default
+ If your new morph stores or references to other morphs outside of
+ the submorph tree in other properties, be sure to also override the
+ default
 
-        updateReferences()
+ updateReferences()
 
-    method if you want it to support duplication.
+ method if you want it to support duplication.
 
 
-    (6) development and user modes
-    ------------------------------
-    When working with Squeak on Scratch or BYOB among the features I
-    like the best and use the most is inspecting what's going on in
-    the World while it is up and running. That's what development mode
-    is for (you could also call it debug mode). In essence development
-    mode controls which context menu shows up. In user mode right
-    clicking (or double finger tapping) a morph invokes its
+ (6) development and user modes
+ ------------------------------
+ When working with Squeak on Scratch or BYOB among the features I
+ like the best and use the most is inspecting what's going on in
+ the World while it is up and running. That's what development mode
+ is for (you could also call it debug mode). In essence development
+ mode controls which context menu shows up. In user mode right
+ clicking (or double finger tapping) a morph invokes its
 
-        customContextMenu
+ customContextMenu
 
-    property, whereas in development mode only the general
+ property, whereas in development mode only the general
 
-        developersMenu()
+ developersMenu()
 
-    method is called and the resulting menu invoked. The developers'
-    menu features Gui-Builder-wise functionality to directly inspect,
-    take apart, reassamble and otherwise manipulate morphs and their
-    contents.
+ method is called and the resulting menu invoked. The developers'
+ menu features Gui-Builder-wise functionality to directly inspect,
+ take apart, reassamble and otherwise manipulate morphs and their
+ contents.
 
-    Instead of using the "customContextMenu" property you can also
-    assign a more dynamic contextMenu by overriding the general
+ Instead of using the "customContextMenu" property you can also
+ assign a more dynamic contextMenu by overriding the general
 
-        userMenu()
+ userMenu()
 
-    method with a customized menu constructor. The difference between
-    the customContextMenu property and the userMenu() method is that
-    the former is also present in development mode and overrides the
-    developersMenu() result. For an example of how to use the
-    customContextMenu property have a look at TextMorph's evaluation
-    menu, which is used for the Inspector's evaluation pane.
+ method with a customized menu constructor. The difference between
+ the customContextMenu property and the userMenu() method is that
+ the former is also present in development mode and overrides the
+ developersMenu() result. For an example of how to use the
+ customContextMenu property have a look at TextMorph's evaluation
+ menu, which is used for the Inspector's evaluation pane.
 
-    When in development mode you can inspect every Morph's properties
-    with the inspector, including all of its methods. The inspector
-    also lets you add, remove and rename properties, and even edit
-    their values at runtime. Like in a Smalltalk environment the inspect
-    features an evaluation pane into which you can type in arbitrary
-    JavaScript code and evaluate it in the context of the inspectee.
+ When in development mode you can inspect every Morph's properties
+ with the inspector, including all of its methods. The inspector
+ also lets you add, remove and rename properties, and even edit
+ their values at runtime. Like in a Smalltalk environment the inspect
+ features an evaluation pane into which you can type in arbitrary
+ JavaScript code and evaluate it in the context of the inspectee.
 
-    Use switching between user and development modes while you are
-    developing an application and disable switching to development once
-    you're done and deploying, because generally you don't want to
-    confuse end-users with inspectors and meta-level stuff.
+ Use switching between user and development modes while you are
+ developing an application and disable switching to development once
+ you're done and deploying, because generally you don't want to
+ confuse end-users with inspectors and meta-level stuff.
 
 
-    (7) turtle graphics
-    -------------------
+ (7) turtle graphics
+ -------------------
 
-    The basic Morphic kernel features a simple LOGO turtle constructor
-    called
+ The basic Morphic kernel features a simple LOGO turtle constructor
+ called
 
-        PenMorph
+ PenMorph
 
-    which you can use to draw onto its parent Morph. By default every
-    Morph in the system (including the World) is able to act as turtle
-    canvas and can display pen trails. Pen trails will be lost whenever
-    the trails morph (the pen's parent) performs a "drawNew()"
-    operation. If you want to create your own pen trails canvas, you
-    may wish to modify its
+ which you can use to draw onto its parent Morph. By default every
+ Morph in the system (including the World) is able to act as turtle
+ canvas and can display pen trails. Pen trails will be lost whenever
+ the trails morph (the pen's parent) performs a "drawNew()"
+ operation. If you want to create your own pen trails canvas, you
+ may wish to modify its
 
-        penTrails()
+ penTrails()
 
-    property, so that it keeps a separate offscreen canvas for pen
-    trails (and doesn't loose these on redraw).
+ property, so that it keeps a separate offscreen canvas for pen
+ trails (and doesn't loose these on redraw).
 
-    the following properties of PenMorph are relevant for turtle
-    graphics:
+ the following properties of PenMorph are relevant for turtle
+ graphics:
 
-        color        - a Color
-        size        - line width of pen trails
-        heading        - degrees
-        isDown        - drawing state
+ color        - a Color
+ size        - line width of pen trails
+ heading        - degrees
+ isDown        - drawing state
 
-    the following commands can be used to actually draw something:
+ the following commands can be used to actually draw something:
 
-        up()        - lift the pen up, further movements leave no trails
-        down()        - set down, further movements leave trails
-        clear()        - remove all trails from the current parent
-        forward(n)    - move n steps in the current direction (heading)
-        turn(n)        - turn right n degrees
+ up()        - lift the pen up, further movements leave no trails
+ down()        - set down, further movements leave trails
+ clear()        - remove all trails from the current parent
+ forward(n)    - move n steps in the current direction (heading)
+ turn(n)        - turn right n degrees
 
-    Turtle graphics can best be explored interactively by creating a
-    new PenMorph object and by manipulating it with the inspector
-    widget.
+ Turtle graphics can best be explored interactively by creating a
+ new PenMorph object and by manipulating it with the inspector
+ widget.
 
-    NOTE: PenMorph has a special optimization for recursive operations
-    called
+ NOTE: PenMorph has a special optimization for recursive operations
+ called
 
-        warp(function)
+ warp(function)
 
-    You can significantly speed up recursive ops and increase the depth
-    of recursion that's displayable by wrapping WARP around your
-    recursive function call:
+ You can significantly speed up recursive ops and increase the depth
+ of recursion that's displayable by wrapping WARP around your
+ recursive function call:
 
-    example:
+ example:
 
-        myPen.warp(function () {
-            myPen.tree(12, 120, 20);
-        })
+ myPen.warp(function () {
+ myPen.tree(12, 120, 20);
+ })
 
-    will be much faster than just invoking the tree function, because it
-    prevents the parent's parent from keeping track of every single line
-    segment and instead redraws the outcome in a single pass.
+ will be much faster than just invoking the tree function, because it
+ prevents the parent's parent from keeping track of every single line
+ segment and instead redraws the outcome in a single pass.
 
 
-    (8) damage list housekeeping
-    ----------------------------
-    Morphic's progressive display update comes at the cost of having to
-    cycle through a list of "broken rectangles" every display cycle. If
-    this list gets very long working this damage list can lead to a
-    seemingly dramatic slow-down of the Morphic system. Typically this
-    occurs when updating the layout of complex Morphs with very many
-    submorphs, e.g. when resizing an inspector window.
+ (8) damage list housekeeping
+ ----------------------------
+ Morphic's progressive display update comes at the cost of having to
+ cycle through a list of "broken rectangles" every display cycle. If
+ this list gets very long working this damage list can lead to a
+ seemingly dramatic slow-down of the Morphic system. Typically this
+ occurs when updating the layout of complex Morphs with very many
+ submorphs, e.g. when resizing an inspector window.
 
-    An effective strategy to cope with this is to use the inherited
+ An effective strategy to cope with this is to use the inherited
 
-        trackChanges
+ trackChanges
 
-    property of the Morph prototype for damage list housekeeping.
+ property of the Morph prototype for damage list housekeeping.
 
-    The trackChanges property of the Morph prototype is a Boolean switch
-    that determines whether the World's damage list ('broken' rectangles)
-    tracks changes. By default the switch is always on. If set to false
-    changes are not stored. This can be very useful for housekeeping of
-    the damage list in situations where a large number of (sub-) morphs
-    are changed more or less at once. Instead of keeping track of every
-    single submorph's changes tremendous performance improvements can be
-    achieved by setting the trackChanges flag to false before propagating
-    the layout changes, setting it to true again and then storing the full
-    bounds of the surrounding morph. As an example refer to the
+ The trackChanges property of the Morph prototype is a Boolean switch
+ that determines whether the World's damage list ('broken' rectangles)
+ tracks changes. By default the switch is always on. If set to false
+ changes are not stored. This can be very useful for housekeeping of
+ the damage list in situations where a large number of (sub-) morphs
+ are changed more or less at once. Instead of keeping track of every
+ single submorph's changes tremendous performance improvements can be
+ achieved by setting the trackChanges flag to false before propagating
+ the layout changes, setting it to true again and then storing the full
+ bounds of the surrounding morph. As an example refer to the
 
-        moveBy()
+ moveBy()
 
-    method of HandMorph, and to the
+ method of HandMorph, and to the
 
-        fixLayout()
+ fixLayout()
 
-    method of InspectorMorph, or the
+ method of InspectorMorph, or the
 
-        startLayout()
-        endLayout()
+ startLayout()
+ endLayout()
 
-    methods of SyntaxElementMorph in the Snap application.
+ methods of SyntaxElementMorph in the Snap application.
 
 
-    (9) supporting high-resolution "retina" screens
-    -----------------------------------------------
-    By default retina support gets installed when Morphic.js loads. There
-    are two global functions that let you test for retina availability:
+ (9) supporting high-resolution "retina" screens
+ -----------------------------------------------
+ By default retina support gets installed when Morphic.js loads. There
+ are two global functions that let you test for retina availability:
 
-        isRetinaSupported() - Bool, answers if retina support is available
-        isRetinaEnabled()   - Bool, answers if currently in retina mode
+ isRetinaSupported() - Bool, answers if retina support is available
+ isRetinaEnabled()   - Bool, answers if currently in retina mode
 
-    and two more functions that let you control retina support if it is
-    available:
+ and two more functions that let you control retina support if it is
+ available:
 
-        enableRetinaSupport()
-        disableRetinaSupport()
+ enableRetinaSupport()
+ disableRetinaSupport()
 
-    Both of these internally test whether retina is available, so they are
-    safe to call directly. For an example how to make retina support
-    user-specifiable refer to
+ Both of these internally test whether retina is available, so they are
+ safe to call directly. For an example how to make retina support
+ user-specifiable refer to
 
-        Snap! >> guis.js >> toggleRetina()
+ Snap! >> guis.js >> toggleRetina()
 
-    Even when in retina mode it often makes sense to use normal-resolution
-    canvasses for simple shapes in order to save system resources and
-    optimize performance. Examples are costumes and backgrounds in Snap.
-    In Morphic you can create new canvas elements using
-    
-        newCanvas(extentPoint [, nonRetinaFlag])
+ Even when in retina mode it often makes sense to use normal-resolution
+ canvasses for simple shapes in order to save system resources and
+ optimize performance. Examples are costumes and backgrounds in Snap.
+ In Morphic you can create new canvas elements using
 
-    If retina support is enabled such new canvasses will automatically be
-    high-resolution canvasses, unless the newCanvas() function is given an
-    otherwise optional second Boolean <true> argument that explicitly makes
-    it a non-retina canvas.
+ newCanvas(extentPoint [, nonRetinaFlag])
 
-    Not the whole canvas API is supported by Morphic's retina utilities.
-    Especially if your code uses putImageData() you will want to "downgrade"
-    a target high-resolution canvas to a normal-resolution ("non-retina")
-    one before using
+ If retina support is enabled such new canvasses will automatically be
+ high-resolution canvasses, unless the newCanvas() function is given an
+ otherwise optional second Boolean <true> argument that explicitly makes
+ it a non-retina canvas.
 
-        normalizeCanvas(aCanvas [, copyFlag])
+ Not the whole canvas API is supported by Morphic's retina utilities.
+ Especially if your code uses putImageData() you will want to "downgrade"
+ a target high-resolution canvas to a normal-resolution ("non-retina")
+ one before using
 
-    This will change the target canvas' resolution in place (!). If you
-    pass in the optional second Boolean <true> flag the function returns
-    a non-retina copy and leaves the target canvas unchanged. An example
-    of this normalize mechanism is converting the penTrails layer of Snap's
-    stage (high-resolution) into a sprite-costume (normal resolution).
+ normalizeCanvas(aCanvas [, copyFlag])
 
+ This will change the target canvas' resolution in place (!). If you
+ pass in the optional second Boolean <true> flag the function returns
+ a non-retina copy and leaves the target canvas unchanged. An example
+ of this normalize mechanism is converting the penTrails layer of Snap's
+ stage (high-resolution) into a sprite-costume (normal resolution).
 
-    (10) animations
-    ---------------
-    Animations handle gradual transitions between one state and another over a
-    period of time. Transition effects can be specified using easing functions.
-    An easing function maps a fraction of the transition time to a fraction of
-    the state delta. This way accelerating / decelerating and bouncing sliding
-    effects can be accomplished.
 
-    Animations are generic and not limited to motion, i.e. they can also handle
-    other transitions such as color changes, transparency fadings, growing,
-    shrinking, turning etc.
+ (10) animations
+ ---------------
+ Animations handle gradual transitions between one state and another over a
+ period of time. Transition effects can be specified using easing functions.
+ An easing function maps a fraction of the transition time to a fraction of
+ the state delta. This way accelerating / decelerating and bouncing sliding
+ effects can be accomplished.
 
-    Animations need to be stepped by a scheduler, e. g. an interval function.
-    In Morphic the preferred way to run an animation is to register it with
-    the World by adding it to the World's animation queue. The World steps each
-    registered animation once per display cycle independently of the Morphic
-    stepping mechanism.
+ Animations are generic and not limited to motion, i.e. they can also handle
+ other transitions such as color changes, transparency fadings, growing,
+ shrinking, turning etc.
 
-    For an example how to use animations look at how the Morph's methods
-    
-        glideTo()
-        fadeTo()
+ Animations need to be stepped by a scheduler, e. g. an interval function.
+ In Morphic the preferred way to run an animation is to register it with
+ the World by adding it to the World's animation queue. The World steps each
+ registered animation once per display cycle independently of the Morphic
+ stepping mechanism.
 
-    and
-    
-        slideBackTo()
+ For an example how to use animations look at how the Morph's methods
 
-    are implemented.
+ glideTo()
+ fadeTo()
 
+ and
 
-    (11) minifying morphic.js
-    -------------------------
-    Coming from Smalltalk and being a Squeaker at heart I am a huge fan
-    of browsing the code itself to make sense of it. Therefore I have
-    included this documentation and (too little) inline comments so all
-    you need to get going is this very file.
+ slideBackTo()
 
-    Nowadays with live streaming HD video even on mobile phones 250 KB
-    shouldn't be a big strain on bandwith, still minifying and even
-    compressing morphic.js down do about 100 KB may sometimes improve
-    performance in production use.
+ are implemented.
 
-    Being an attorney-at-law myself you programmer folk keep harassing
-    me with rabulistic nitpickings about free software licenses. I'm
-    releasing morphic.js under an AGPL license. Therefore please make
-    sure to adhere to that license in any minified or compressed version.
 
+ (11) minifying morphic.js
+ -------------------------
+ Coming from Smalltalk and being a Squeaker at heart I am a huge fan
+ of browsing the code itself to make sense of it. Therefore I have
+ included this documentation and (too little) inline comments so all
+ you need to get going is this very file.
 
-    VIII. acknowledgements
-    ----------------------
-    The original Morphic was designed and written by Randy Smith and
-    John Maloney for the SELF programming language, and later ported to
-    Squeak (Smalltalk) by John Maloney and Dan Ingalls, who has also
-    ported it to JavaScript (the Lively Kernel), once again setting
-    a "Gold Standard" for self sustaining systems which morphic.js
-    cannot and does not aspire to meet.
+ Nowadays with live streaming HD video even on mobile phones 250 KB
+ shouldn't be a big strain on bandwith, still minifying and even
+ compressing morphic.js down do about 100 KB may sometimes improve
+ performance in production use.
 
-    This Morphic implementation for JavaScript is not a direct port of
-    Squeak's Morphic, but still many individual functions have been
-    ported almost literally from Squeak, sometimes even including their
-    comments, e.g. the morph duplication mechanism fullCopy(). Squeak
-    has been a treasure trove, and if morphic.js looks, feels and
-    smells a lot like Squeak, I'll take it as a compliment.
+ Being an attorney-at-law myself you programmer folk keep harassing
+ me with rabulistic nitpickings about free software licenses. I'm
+ releasing morphic.js under an AGPL license. Therefore please make
+ sure to adhere to that license in any minified or compressed version.
 
-    Evelyn Eastmond has inspired and encouraged me with her wonderful
-    implementation of DesignBlocksJS. Thanks for sharing code, ideas
-    and enthusiasm for programming.
 
-    John Maloney has been my mentor and my source of inspiration for
-    these Morphic experiments. Thanks for the critique, the suggestions
-    and explanations for all things Morphic and for being my all time
-    programming hero.
+ VIII. acknowledgements
+ ----------------------
+ The original Morphic was designed and written by Randy Smith and
+ John Maloney for the SELF programming language, and later ported to
+ Squeak (Smalltalk) by John Maloney and Dan Ingalls, who has also
+ ported it to JavaScript (the Lively Kernel), once again setting
+ a "Gold Standard" for self sustaining systems which morphic.js
+ cannot and does not aspire to meet.
 
-    I have originally written morphic.js in Florian Balmer's Notepad2
-    editor for Windows, later switched to Apple's Dashcode and later
-    still to Apple's Xcode. I've also come to depend on both Douglas
-    Crockford's JSLint and later the JSHint project, as well as on
-    Mozilla's Firebug and Google's Chrome to get
-    it right.
+ This Morphic implementation for JavaScript is not a direct port of
+ Squeak's Morphic, but still many individual functions have been
+ ported almost literally from Squeak, sometimes even including their
+ comments, e.g. the morph duplication mechanism fullCopy(). Squeak
+ has been a treasure trove, and if morphic.js looks, feels and
+ smells a lot like Squeak, I'll take it as a compliment.
 
+ Evelyn Eastmond has inspired and encouraged me with her wonderful
+ implementation of DesignBlocksJS. Thanks for sharing code, ideas
+ and enthusiasm for programming.
 
-    IX. contributors
-    ----------------------
-    Joe Otto found and fixed many early bugs and taught me some tricks.
-    Nathan Dinsmore contributed mouse wheel scrolling, cached
-    background texture handling, countless bug fixes and optimizations.
-    Ian Reynolds contributed backspace key handling for Chrome.
-    Davide Della Casa contributed performance optimizations for Firefox.
-    Jason N (@cyderize) contributed native copy & paste for text editing.
-    Bartosz Leper contributed retina display support.
-    Brian Harvey contributed to the design and implemenatation of submenus.
+ John Maloney has been my mentor and my source of inspiration for
+ these Morphic experiments. Thanks for the critique, the suggestions
+ and explanations for all things Morphic and for being my all time
+ programming hero.
 
-    - Jens Mönig
-*/
+ I have originally written morphic.js in Florian Balmer's Notepad2
+ editor for Windows, later switched to Apple's Dashcode and later
+ still to Apple's Xcode. I've also come to depend on both Douglas
+ Crockford's JSLint and later the JSHint project, as well as on
+ Mozilla's Firebug and Google's Chrome to get
+ it right.
+
+
+ IX. contributors
+ ----------------------
+ Joe Otto found and fixed many early bugs and taught me some tricks.
+ Nathan Dinsmore contributed mouse wheel scrolling, cached
+ background texture handling, countless bug fixes and optimizations.
+ Ian Reynolds contributed backspace key handling for Chrome.
+ Davide Della Casa contributed performance optimizations for Firefox.
+ Jason N (@cyderize) contributed native copy & paste for text editing.
+ Bartosz Leper contributed retina display support.
+ Brian Harvey contributed to the design and implemenatation of submenus.
+
+ - Jens Mönig
+ */
 
 // Global settings /////////////////////////////////////////////////////
 
@@ -1186,28 +1186,28 @@ var MorphicPreferences = standardSettings;
 // first, try enabling support for retina displays - can be turned off later
 
 /*
-    Support for retina displays has been pioneered and contributed by
-    Bartosz Leper.
+ Support for retina displays has been pioneered and contributed by
+ Bartosz Leper.
 
-    NOTE: this will make changes to the HTMLCanvasElement that - mostly -
-    make Morphic usable on retina displays in very high resolution mode
-    with crisp fonts and clear fine lines without you (the programmer)
-    needing to know any specifics, provided both the display and the browser
-    support these (Safari currently doesn't), otherwise these utilities will
-    not be installed.
-    If you don't want your Morphic application to support retina resolutions
-    you don't have to edit this morphic.js file to comment out the next line
-    of code, instead you can simply call
+ NOTE: this will make changes to the HTMLCanvasElement that - mostly -
+ make Morphic usable on retina displays in very high resolution mode
+ with crisp fonts and clear fine lines without you (the programmer)
+ needing to know any specifics, provided both the display and the browser
+ support these (Safari currently doesn't), otherwise these utilities will
+ not be installed.
+ If you don't want your Morphic application to support retina resolutions
+ you don't have to edit this morphic.js file to comment out the next line
+ of code, instead you can simply call
 
-        disableRetinaSupport();
+ disableRetinaSupport();
 
-    before you create your World(s) in the html page. Disabling retina
-    support also will simply do nothing if retina support is not possible
-    or already disabled, so it's equally safe to call.
+ before you create your World(s) in the html page. Disabling retina
+ support also will simply do nothing if retina support is not possible
+ or already disabled, so it's equally safe to call.
 
-    For an example how to make retina support user-specifiable refer to
-    Snap! >> guis.js >> toggleRetina()
-*/
+ For an example how to make retina support user-specifiable refer to
+ Snap! >> guis.js >> toggleRetina()
+ */
 
 enableRetinaSupport();
 
@@ -1363,7 +1363,7 @@ function getDocumentPositionOf(aDOMelement) {
         pos.x += offsetParent.offsetLeft;
         pos.y += offsetParent.offsetTop;
         if (offsetParent !== document.body &&
-                offsetParent !== document.documentElement) {
+            offsetParent !== document.documentElement) {
             pos.x -= offsetParent.scrollLeft;
             pos.y -= offsetParent.scrollTop;
         }
@@ -1384,7 +1384,7 @@ function copy(target) {
         return new target.constructor(value);
     }
     if (target instanceof target.constructor &&
-            target.constructor !== Object) {
+        target.constructor !== Object) {
         c = Object.create(target.constructor.prototype);
         keys = Object.keys(target);
         for (l = keys.length, i = 0; i < l; i += 1) {
@@ -1403,66 +1403,66 @@ function copy(target) {
 // Retina Display Support //////////////////////////////////////////////
 
 /*
-    By default retina support gets installed when Morphic.js loads. There
-    are two global functions that let you test for retina availability:
+ By default retina support gets installed when Morphic.js loads. There
+ are two global functions that let you test for retina availability:
 
-        isRetinaSupported() - Boolean, whether retina support is available
-        isRetinaEnabled()   - Boolean, whether currently in retina mode
+ isRetinaSupported() - Boolean, whether retina support is available
+ isRetinaEnabled()   - Boolean, whether currently in retina mode
 
-    and two more functions that let you control retina support if it is
-    available:
+ and two more functions that let you control retina support if it is
+ available:
 
-        enableRetinaSupport()
-        disableRetinaSupport()
+ enableRetinaSupport()
+ disableRetinaSupport()
 
-    Both of these internally test whether retina is available, so they are
-    safe to call directly.
+ Both of these internally test whether retina is available, so they are
+ safe to call directly.
 
-    Even when in retina mode it often makes sense to use non-high-resolution
-    canvasses for simple shapes in order to save system resources and
-    optimize performance. Examples are costumes and backgrounds in Snap.
-    In Morphic you can create new canvas elements using
-    
-        newCanvas(extentPoint [, nonRetinaFlag])
+ Even when in retina mode it often makes sense to use non-high-resolution
+ canvasses for simple shapes in order to save system resources and
+ optimize performance. Examples are costumes and backgrounds in Snap.
+ In Morphic you can create new canvas elements using
 
-    If retina support is enabled such new canvasses will automatically be
-    high-resolution canvasses, unless the newCanvas() function is given an
-    otherwise optional second Boolean <true> argument that explicitly makes
-    it a non-retina canvas.
+ newCanvas(extentPoint [, nonRetinaFlag])
 
-    Not the whole canvas API is supported by Morphic's retina utilities.
-    Especially if your code uses putImageData() you will want to "downgrade"
-    a target high-resolution canvas to a normal-resolution ("non-retina")
-    one before using
+ If retina support is enabled such new canvasses will automatically be
+ high-resolution canvasses, unless the newCanvas() function is given an
+ otherwise optional second Boolean <true> argument that explicitly makes
+ it a non-retina canvas.
 
-        normalizeCanvas(aCanvas [, copyFlag])
+ Not the whole canvas API is supported by Morphic's retina utilities.
+ Especially if your code uses putImageData() you will want to "downgrade"
+ a target high-resolution canvas to a normal-resolution ("non-retina")
+ one before using
 
-    This will change the target canvas' resolution in place (!). If you
-    pass in the optional second Boolean <true> flag the function returns
-    a non-retina copy and leaves the target canvas unchanged. An example
-    of this normalize mechanism is converting the penTrails layer of Snap's
-    stage (high-resolution) into a sprite-costume (normal resolution).
-*/
+ normalizeCanvas(aCanvas [, copyFlag])
+
+ This will change the target canvas' resolution in place (!). If you
+ pass in the optional second Boolean <true> flag the function returns
+ a non-retina copy and leaves the target canvas unchanged. An example
+ of this normalize mechanism is converting the penTrails layer of Snap's
+ stage (high-resolution) into a sprite-costume (normal resolution).
+ */
 
 function enableRetinaSupport() {
-/*
-    === contributed by Bartosz Leper ===
+    /*
+     === contributed by Bartosz Leper ===
 
-    This installs a series of utilities that allow using Canvas the same way
-    on retina and non-retina displays. If the display is a retina one, the
-    underlying dimensions of the Canvas elements are doubled, but this will
-    be transparent to the code that uses Canvas. All dimensions read or
-    written to the Canvas element will be scaled appropriately.
+     This installs a series of utilities that allow using Canvas the same way
+     on retina and non-retina displays. If the display is a retina one, the
+     underlying dimensions of the Canvas elements are doubled, but this will
+     be transparent to the code that uses Canvas. All dimensions read or
+     written to the Canvas element will be scaled appropriately.
 
-    NOTE: This implementation is not exhaustive; it only implements what is
-    needed by the Snap! UI.
-    
-    [Jens]: like all other retina screen support implementations I've seen
-    Bartosz's patch also does not address putImageData() compatibility when
-    mixing retina-enabled and non-retina canvasses. If you need to manipulate
-    pixels in such mixed canvasses, make sure to "downgrade" them all using
-    normalizeCanvas() below.
-*/
+     NOTE: This implementation is not exhaustive; it only implements what is
+     needed by the Snap! UI.
+
+     [Jens]: like all other retina screen support implementations I've seen
+     Bartosz's patch also does not address putImageData() compatibility when
+     mixing retina-enabled and non-retina canvasses. If you need to manipulate
+     pixels in such mixed canvasses, make sure to "downgrade" them all using
+     normalizeCanvas() below.
+     */
 
     // Get the window's pixel ratio for canvas elements.
     // See: http://www.html5rocks.com/en/tutorials/canvas/hidpi/
@@ -1473,26 +1473,26 @@ function enableRetinaSupport() {
             ctx.oBackingStorePixelRatio ||
             ctx.backingStorePixelRatio || 1,
 
-    // Unfortunately, it's really hard to make this work well when changing
-    // zoom level, so let's leave it like this right now, and stick to
-    // whatever the ratio was in the beginning.
+        // Unfortunately, it's really hard to make this work well when changing
+        // zoom level, so let's leave it like this right now, and stick to
+        // whatever the ratio was in the beginning.
 
         // originalDevicePixelRatio = window.devicePixelRatio,
 
-    // [Jens]: As of summer 2016 non-integer devicePixelRatios lead to
-    // artifacts when blitting images onto canvas elements in all browsers
-    // except Chrome, especially Firefox, Edge, IE (Safari doesn't even
-    // support retina mode as implemented here).
-    // therefore - to ensure crisp fonts - use the ceiling of whatever
-    // the devicePixelRatio is. This needs more memory, but looks nicer.
+        // [Jens]: As of summer 2016 non-integer devicePixelRatios lead to
+        // artifacts when blitting images onto canvas elements in all browsers
+        // except Chrome, especially Firefox, Edge, IE (Safari doesn't even
+        // support retina mode as implemented here).
+        // therefore - to ensure crisp fonts - use the ceiling of whatever
+        // the devicePixelRatio is. This needs more memory, but looks nicer.
 
         originalDevicePixelRatio = Math.ceil(window.devicePixelRatio),
 
         canvasProto = HTMLCanvasElement.prototype,
         contextProto = CanvasRenderingContext2D.prototype,
 
-    // [Jens]: keep track of original properties in a dictionary
-    // so they can be iterated over and restored
+        // [Jens]: keep track of original properties in a dictionary
+        // so they can be iterated over and restored
         uber = {
             drawImage: contextProto.drawImage,
             getImageData: contextProto.getImageData,
@@ -1520,12 +1520,16 @@ function enableRetinaSupport() {
         };
 
     // [Jens]: only install retina utilities if the display supports them
-    if (backingStorePixelRatio === originalDevicePixelRatio) {return; }
+    if (backingStorePixelRatio === originalDevicePixelRatio) {
+        return;
+    }
     // [Jens]: check whether properties can be overridden, needed for Safari
     if (Object.keys(uber).some(function (any) {
-        var prop = uber[any];
-        return prop.hasOwnProperty('configurable') && (!prop.configurable);
-    })) {return; }
+            var prop = uber[any];
+            return prop.hasOwnProperty('configurable') && (!prop.configurable);
+        })) {
+        return;
+    }
 
     function getPixelRatio(imageSource) {
         return imageSource.isRetinaEnabled ?
@@ -1538,10 +1542,10 @@ function enableRetinaSupport() {
     canvasProto._bak = uber;
 
     Object.defineProperty(canvasProto, 'isRetinaEnabled', {
-        get: function() {
+        get: function () {
             return this._isRetinaEnabled;
         },
-        set: function(enabled) {
+        set: function (enabled) {
             var prevPixelRatio = getPixelRatio(this),
                 prevWidth = this.width,
                 prevHeight = this.height;
@@ -1556,10 +1560,10 @@ function enableRetinaSupport() {
     });
 
     Object.defineProperty(canvasProto, 'width', {
-        get: function() {
+        get: function () {
             return uber.width.get.call(this) / getPixelRatio(this);
         },
-        set: function(width) {
+        set: function (width) {
             try { // workaround one of FF's dreaded NS_ERROR_FAILURE bugs
                 // this should be taken out as soon as FF gets fixed again
                 var pixelRatio = getPixelRatio(this),
@@ -1577,10 +1581,10 @@ function enableRetinaSupport() {
     });
 
     Object.defineProperty(canvasProto, 'height', {
-        get: function() {
+        get: function () {
             return uber.height.get.call(this) / getPixelRatio(this);
         },
-        set: function(height) {
+        set: function (height) {
             var pixelRatio = getPixelRatio(this),
                 context;
             uber.height.set.call(this, height * pixelRatio);
@@ -1591,10 +1595,10 @@ function enableRetinaSupport() {
         }
     });
 
-    contextProto.drawImage = function(image) {
+    contextProto.drawImage = function (image) {
         var pixelRatio = getPixelRatio(image),
             sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight;
-        
+
         // Different signatures of drawImage() method have different
         // parameter assignments.
         switch (arguments.length) {
@@ -1633,59 +1637,59 @@ function enableRetinaSupport() {
 
             default:
                 throw Error('Called drawImage() with ' + arguments.length +
-                        ' arguments');
+                    ' arguments');
         }
         uber.drawImage.call(
-                this, image,
-                sx * pixelRatio, sy * pixelRatio,
-                sWidth * pixelRatio, sHeight * pixelRatio,
-                dx, dy,
-                dWidth, dHeight);
+            this, image,
+            sx * pixelRatio, sy * pixelRatio,
+            sWidth * pixelRatio, sHeight * pixelRatio,
+            dx, dy,
+            dWidth, dHeight);
     };
 
-    contextProto.getImageData = function(sx, sy, sw, sh) {
+    contextProto.getImageData = function (sx, sy, sw, sh) {
         var pixelRatio = getPixelRatio(this.canvas);
         return uber.getImageData.call(
-                this,
-                sx * pixelRatio, sy * pixelRatio,
-                sw * pixelRatio, sh * pixelRatio);
+            this,
+            sx * pixelRatio, sy * pixelRatio,
+            sw * pixelRatio, sh * pixelRatio);
     };
 
     Object.defineProperty(contextProto, 'shadowOffsetX', {
-        get: function() {
+        get: function () {
             return uber.shadowOffsetX.get.call(this) /
                 getPixelRatio(this.canvas);
         },
-        set: function(offset) {
+        set: function (offset) {
             var pixelRatio = getPixelRatio(this.canvas);
             uber.shadowOffsetX.set.call(this, offset * pixelRatio);
         }
     });
 
     Object.defineProperty(contextProto, 'shadowOffsetY', {
-        get: function() {
+        get: function () {
             return uber.shadowOffsetY.get.call(this) /
                 getPixelRatio(this.canvas);
         },
-        set: function(offset) {
+        set: function (offset) {
             var pixelRatio = getPixelRatio(this.canvas);
             uber.shadowOffsetY.set.call(this, offset * pixelRatio);
         }
     });
 
     Object.defineProperty(contextProto, 'shadowBlur', {
-        get: function() {
+        get: function () {
             return uber.shadowBlur.get.call(this) /
                 getPixelRatio(this.canvas);
         },
-        set: function(blur) {
+        set: function (blur) {
             var pixelRatio = getPixelRatio(this.canvas);
             uber.shadowBlur.set.call(this, blur * pixelRatio);
         }
     });
 }
 
-function isRetinaSupported () {
+function isRetinaSupported() {
     var ctx = document.createElement("canvas").getContext("2d"),
         backingStorePixelRatio = ctx.webkitBackingStorePixelRatio ||
             ctx.mozBackingStorePixelRatio ||
@@ -1721,13 +1725,13 @@ function isRetinaSupported () {
         };
     return backingStorePixelRatio !== window.devicePixelRatio &&
         !(Object.keys(uber).some(function (any) {
-            var prop = uber[any];
-            return prop.hasOwnProperty('configurable') && (!prop.configurable);
-        })
-    );
+                var prop = uber[any];
+                return prop.hasOwnProperty('configurable') && (!prop.configurable);
+            })
+        );
 }
 
-function isRetinaEnabled () {
+function isRetinaEnabled() {
     return HTMLCanvasElement.prototype.hasOwnProperty('_isRetinaEnabled');
 }
 
@@ -1735,7 +1739,9 @@ function disableRetinaSupport() {
     // uninstalls Retina utilities. Make sure to re-create every Canvas
     // element afterwards
     var canvasProto, contextProto, uber;
-    if (!isRetinaEnabled()) {return; }
+    if (!isRetinaEnabled()) {
+        return;
+    }
     canvasProto = HTMLCanvasElement.prototype;
     contextProto = CanvasRenderingContext2D.prototype;
     uber = canvasProto._bak;
@@ -1755,10 +1761,14 @@ function normalizeCanvas(aCanvas, getCopy) {
     // make sure aCanvas is non-retina, otherwise convert it in place (!)
     // or answer a normalized copy if the "getCopy" flag is <true>
     var cpy;
-    if (!aCanvas.isRetinaEnabled) {return aCanvas; }
+    if (!aCanvas.isRetinaEnabled) {
+        return aCanvas;
+    }
     cpy = newCanvas(new Point(aCanvas.width, aCanvas.height), true);
     cpy.getContext('2d').drawImage(aCanvas, 0, 0);
-    if (getCopy) {return cpy; }
+    if (getCopy) {
+        return cpy;
+    }
     aCanvas.isRetinaEnabled = false;
     aCanvas.width = cpy.width;
     aCanvas.height = cpy.height;
@@ -1769,33 +1779,33 @@ function normalizeCanvas(aCanvas, getCopy) {
 // Animations //////////////////////////////////////////////////////////////
 
 /*
-    Animations handle gradual transitions between one state and another over a
-    period of time. Transition effects can be specified using easing functions.
-    An easing function maps a fraction of the transition time to a fraction of
-    the state delta. This way accelerating / decelerating and bouncing sliding
-    effects can be accomplished.
+ Animations handle gradual transitions between one state and another over a
+ period of time. Transition effects can be specified using easing functions.
+ An easing function maps a fraction of the transition time to a fraction of
+ the state delta. This way accelerating / decelerating and bouncing sliding
+ effects can be accomplished.
 
-    Animations are generic and not limited to motion, i.e. they can also handle
-    other transitions such as color changes, transparency fadings, growing,
-    shrinking, turning etc.
+ Animations are generic and not limited to motion, i.e. they can also handle
+ other transitions such as color changes, transparency fadings, growing,
+ shrinking, turning etc.
 
-    Animations need to be stepped by a scheduler, e. g. an interval function.
-    In Morphic the preferred way to run an animation is to register it with
-    the World by adding it to the World's animation queue. The World steps each
-    registered animation once per display cycle independently of the Morphic
-    stepping mechanism.
+ Animations need to be stepped by a scheduler, e. g. an interval function.
+ In Morphic the preferred way to run an animation is to register it with
+ the World by adding it to the World's animation queue. The World steps each
+ registered animation once per display cycle independently of the Morphic
+ stepping mechanism.
 
-    For an example how to use animations look at how the Morph's methods
-    
-        glideTo()
-        fadeTo()
+ For an example how to use animations look at how the Morph's methods
 
-    and
-    
-        slideBackTo()
+ glideTo()
+ fadeTo()
 
-    are implemented.
-*/
+ and
+
+ slideBackTo()
+
+ are implemented.
+ */
 
 // Animation instance creation:
 
@@ -1805,8 +1815,8 @@ function Animation(setter, getter, delta, duration, easing, onComplete) {
     this.delta = delta || 0; // number
     this.duration = duration || 0; // milliseconds
     this.easing = isString(easing) ? // string or function
-            this.easings[easing] || this.easings.sinusoidal
-                : easing || this.easings.sinusoidal;
+        this.easings[easing] || this.easings.sinusoidal
+        : easing || this.easings.sinusoidal;
     this.onComplete = onComplete || null; // optional callback
     this.endTime = null;
     this.destination = null;
@@ -1819,36 +1829,52 @@ Animation.prototype.easings = {
     // two states
 
     // ease both in and out:
-    linear: function (t) {return t; },
-    sinusoidal: function (t) {return 1 - Math.cos(radians(t * 90)); },
+    linear: function (t) {
+        return t;
+    },
+    sinusoidal: function (t) {
+        return 1 - Math.cos(radians(t * 90));
+    },
     quadratic: function (t) {
         return t < 0.5 ?
-                2 * t * t
-                    : ((4 - (2 * t)) * t) - 1;
+            2 * t * t
+            : ((4 - (2 * t)) * t) - 1;
     },
     cubic: function (t) {
         return t < 0.5 ?
-                4 * t * t * t
-                    : ((t - 1) * ((2 * t) - 2) * ((2 * t) - 2)) + 1;
+            4 * t * t * t
+            : ((t - 1) * ((2 * t) - 2) * ((2 * t) - 2)) + 1;
     },
     elastic: function (t) {
         return (t -= 0.5) < 0 ?
             (0.01 + 0.01 / t) * Math.sin(50 * t)
-                : (0.02 - 0.01 / t) * Math.sin(50 * t) + 1;
+            : (0.02 - 0.01 / t) * Math.sin(50 * t) + 1;
     },
 
     // ease in only:
-    sine_in: function (t) {return 1 - Math.sin(radians(90 + (t * 90))); },
-    quad_in: function (t) {return t * t; },
-    cubic_in: function (t) {return t * t * t; },
+    sine_in: function (t) {
+        return 1 - Math.sin(radians(90 + (t * 90)));
+    },
+    quad_in: function (t) {
+        return t * t;
+    },
+    cubic_in: function (t) {
+        return t * t * t;
+    },
     elastic_in: function (t) {
         return (0.04 - 0.04 / t) * Math.sin(25 * t) + 1;
     },
 
     // ease out only:
-    sine_out: function (t) {return Math.sin(radians(t * 90)); },
-    quad_out: function (t) {return t * (2 - t); },
-    elastic_out: function (t) {return 0.04 * t / (--t) * Math.sin(25 * t); }
+    sine_out: function (t) {
+        return Math.sin(radians(t * 90));
+    },
+    quad_out: function (t) {
+        return t * (2 - t);
+    },
+    elastic_out: function (t) {
+        return 0.04 * t / (--t) * Math.sin(25 * t);
+    }
 };
 
 Animation.prototype.start = function () {
@@ -1861,16 +1887,20 @@ Animation.prototype.start = function () {
 };
 
 Animation.prototype.step = function () {
-    if (!this.isActive) {return; }
+    if (!this.isActive) {
+        return;
+    }
     var now = Date.now();
     if (now > this.endTime) {
         this.setter(this.destination);
         this.isActive = false;
-        if (this.onComplete) {this.onComplete(); }
+        if (this.onComplete) {
+            this.onComplete();
+        }
     } else {
         this.setter(
             this.destination -
-                (this.delta * this.easing((this.endTime - now) / this.duration))
+            (this.delta * this.easing((this.endTime - now) / this.duration))
         );
     }
 };
@@ -1937,15 +1967,15 @@ Color.prototype.hsv = function () {
         h = 0;
     } else {
         switch (max) {
-        case rr:
-            h = (gg - bb) / d + (gg < bb ? 6 : 0);
-            break;
-        case gg:
-            h = (bb - rr) / d + 2;
-            break;
-        case bb:
-            h = (rr - gg) / d + 4;
-            break;
+            case rr:
+                h = (gg - bb) / d + (gg < bb ? 6 : 0);
+                break;
+            case gg:
+                h = (bb - rr) / d + 2;
+                break;
+            case bb:
+                h = (rr - gg) / d + 4;
+                break;
         }
         h /= 6;
     }
@@ -1961,36 +1991,36 @@ Color.prototype.set_hsv = function (h, s, v) {
     q = v * (1 - f * s);
     t = v * (1 - (1 - f) * s);
     switch (i % 6) {
-    case 0:
-        this.r = v;
-        this.g = t;
-        this.b = p;
-        break;
-    case 1:
-        this.r = q;
-        this.g = v;
-        this.b = p;
-        break;
-    case 2:
-        this.r = p;
-        this.g = v;
-        this.b = t;
-        break;
-    case 3:
-        this.r = p;
-        this.g = q;
-        this.b = v;
-        break;
-    case 4:
-        this.r = t;
-        this.g = p;
-        this.b = v;
-        break;
-    case 5:
-        this.r = v;
-        this.g = p;
-        this.b = q;
-        break;
+        case 0:
+            this.r = v;
+            this.g = t;
+            this.b = p;
+            break;
+        case 1:
+            this.r = q;
+            this.g = v;
+            this.b = p;
+            break;
+        case 2:
+            this.r = p;
+            this.g = v;
+            this.b = t;
+            break;
+        case 3:
+            this.r = p;
+            this.g = q;
+            this.b = v;
+            break;
+        case 4:
+            this.r = t;
+            this.g = p;
+            this.b = v;
+            break;
+        case 5:
+            this.r = v;
+            this.g = p;
+            this.b = q;
+            break;
     }
 
     this.r *= 255;
@@ -2182,10 +2212,10 @@ Point.prototype.r = function () {
 };
 
 Point.prototype.degrees = function () {
-/*
-    answer the angle I make with origin in degrees.
-    Right is 0, down is 90
-*/
+    /*
+     answer the angle I make with origin in degrees.
+     Right is 0, down is 90
+     */
     var tan, theta;
 
     if (this.x === 0) {
@@ -2206,10 +2236,10 @@ Point.prototype.degrees = function () {
 };
 
 Point.prototype.theta = function () {
-/*
-    answer the angle I make with origin in radians.
-    Right is 0, down is 90
-*/
+    /*
+     answer the angle I make with origin in radians.
+     Right is 0, down is 90
+     */
     var tan, theta;
 
     if (this.x === 0) {
@@ -2311,7 +2341,7 @@ Point.prototype.asArray = function () {
 
 function Rectangle(left, top, right, bottom) {
     this.init(new Point((left || 0), (top || 0)),
-            new Point((right || 0), (bottom || 0)));
+        new Point((right || 0), (bottom || 0)));
 }
 
 Rectangle.prototype.init = function (originPoint, cornerPoint) {
@@ -2544,11 +2574,11 @@ Rectangle.prototype.spread = function () {
 };
 
 Rectangle.prototype.amountToTranslateWithin = function (aRect) {
-/*
-    Answer a Point, delta, such that self + delta is forced within
-    aRectangle. when all of me cannot be made to fit, prefer to keep
-    my topLeft inside. Taken from Squeak.
-*/
+    /*
+     Answer a Point, delta, such that self + delta is forced within
+     aRectangle. when all of me cannot be made to fit, prefer to keep
+     my topLeft inside. Taken from Squeak.
+     */
     var dx = 0, dy = 0;
 
     if (this.right() > aRect.right()) {
@@ -2588,7 +2618,7 @@ Rectangle.prototype.intersects = function (aRect) {
 Rectangle.prototype.isNearTo = function (aRect, threshold) {
     var ro = aRect.origin, rc = aRect.corner, border = threshold || 0;
     return (rc.x + border >= this.origin.x) &&
-        (rc.y  + border >= this.origin.y) &&
+        (rc.y + border >= this.origin.y) &&
         (ro.x - border <= this.corner.x) &&
         (ro.y - border <= this.corner.y);
 };
@@ -2792,28 +2822,28 @@ Morph.uber = Node.prototype;
 // Morph settings:
 
 /*
-    damage list housekeeping
+ damage list housekeeping
 
-    the trackChanges property of the Morph prototype is a Boolean switch
-    that determines whether the World's damage list ('broken' rectangles)
-    tracks changes. By default the switch is always on. If set to false
-    changes are not stored. This can be very useful for housekeeping of
-    the damage list in situations where a large number of (sub-) morphs
-    are changed more or less at once. Instead of keeping track of every
-    single submorph's changes tremendous performance improvements can be
-    achieved by setting the trackChanges flag to false before propagating
-    the layout changes, setting it to true again and then storing the full
-    bounds of the surrounding morph. As an example refer to the
+ the trackChanges property of the Morph prototype is a Boolean switch
+ that determines whether the World's damage list ('broken' rectangles)
+ tracks changes. By default the switch is always on. If set to false
+ changes are not stored. This can be very useful for housekeeping of
+ the damage list in situations where a large number of (sub-) morphs
+ are changed more or less at once. Instead of keeping track of every
+ single submorph's changes tremendous performance improvements can be
+ achieved by setting the trackChanges flag to false before propagating
+ the layout changes, setting it to true again and then storing the full
+ bounds of the surrounding morph. As an example refer to the
 
-        fixLayout()
+ fixLayout()
 
-    method of InspectorMorph, or the
+ method of InspectorMorph, or the
 
-        startLayout()
-        endLayout()
+ startLayout()
+ endLayout()
 
-    methods of SyntaxElementMorph in the Snap application.
-*/
+ methods of SyntaxElementMorph in the Snap application.
+ */
 
 Morph.prototype.trackChanges = true;
 Morph.prototype.shadowBlur = 4;
@@ -2842,7 +2872,9 @@ Morph.prototype.init = function (noDraw) {
     this.isTemplate = false;
     this.acceptsDrops = false;
     this.noticesTransparentClick = false;
-    if (!noDraw) {this.drawNew(); }
+    if (!noDraw) {
+        this.drawNew();
+    }
     this.fps = 0;
     this.customContextMenu = null;
     this.lastTime = Date.now();
@@ -2854,7 +2886,7 @@ Morph.prototype.init = function (noDraw) {
 Morph.prototype.toString = function () {
     return 'a ' +
         (this.constructor.name ||
-            this.constructor.toString().split(' ')[1].split('(')[0]) +
+        this.constructor.toString().split(' ')[1].split('(')[0]) +
         ' ' +
         this.children.length.toString() + ' ' +
         this.bounds;
@@ -3134,7 +3166,9 @@ Morph.prototype.keepWithin = function (aMorph) {
 Morph.prototype.scrollIntoView = function () {
     var leftOff, rightOff, topOff, bottomOff,
         sf = this.parentThatIsA(ScrollFrameMorph);
-    if (!sf) {return; }
+    if (!sf) {
+        return;
+    }
     rightOff = Math.min(
         this.fullBounds().right() - sf.right(),
         sf.contents.right() - sf.right()
@@ -3261,14 +3295,14 @@ Morph.prototype.drawCachedTexture = function () {
 };
 
 /*
-Morph.prototype.drawCachedTexture = function () {
-    var context = this.image.getContext('2d'),
-        pattern = context.createPattern(this.cachedTexture, 'repeat');
-    context.fillStyle = pattern;
-    context.fillRect(0, 0, this.image.width, this.image.height);
-    this.changed();
-};
-*/
+ Morph.prototype.drawCachedTexture = function () {
+ var context = this.image.getContext('2d'),
+ pattern = context.createPattern(this.cachedTexture, 'repeat');
+ context.fillStyle = pattern;
+ context.fillRect(0, 0, this.image.width, this.image.height);
+ this.changed();
+ };
+ */
 
 Morph.prototype.drawOn = function (aCanvas, aRect) {
     var rectangle, area, delta, src, context, w, h, sl, st,
@@ -3315,7 +3349,9 @@ Morph.prototype.fullDrawOn = function (aCanvas, aRect) {
     }
     rectangle = aRect || this.cachedFullBounds || this.fullBounds();
     this.drawOn(aCanvas, rectangle);
-    if (this.cachedFullImage) {return; }
+    if (this.cachedFullImage) {
+        return;
+    }
     this.children.forEach(function (child) {
         child.fullDrawOn(aCanvas, rectangle);
     });
@@ -3556,14 +3592,18 @@ Morph.prototype.addBack = function (aMorph) {
 
 Morph.prototype.topMorphAt = function (point) {
     var i, result;
-    if (!this.isVisible) {return null; }
+    if (!this.isVisible) {
+        return null;
+    }
     for (i = this.children.length - 1; i >= 0; i -= 1) {
         result = this.children[i].topMorphAt(point);
-        if (result) {return result; }
+        if (result) {
+            return result;
+        }
     }
     return this.bounds.containsPoint(point) &&
-        (this.noticesTransparentClick || !this.isTransparentAt(point)) ? this
-              : null;
+    (this.noticesTransparentClick || !this.isTransparentAt(point)) ? this
+        : null;
 };
 
 Morph.prototype.topMorphSuchThat = function (predicate) {
@@ -3647,11 +3687,11 @@ Morph.prototype.copy = function () {
 
 Morph.prototype.fullCopy = function () {
     /*
-    Produce a copy of me with my entire tree of submorphs. Morphs
-    mentioned more than once are all directed to a single new copy.
-    Other properties are also *shallow* copied, so you must override
-    to deep copy Arrays and (complex) Objects
-    */
+     Produce a copy of me with my entire tree of submorphs. Morphs
+     mentioned more than once are all directed to a single new copy.
+     Other properties are also *shallow* copied, so you must override
+     to deep copy Arrays and (complex) Objects
+     */
     var map = new Map(), c;
     c = this.copyRecordingReferences(map);
     c.forAllChildren(function (m) {
@@ -3662,17 +3702,17 @@ Morph.prototype.fullCopy = function () {
 
 Morph.prototype.copyRecordingReferences = function (map) {
     /*
-    Recursively copy this entire composite morph, recording the
-    correspondence between old and new morphs in the given dictionary.
-    This dictionary will be used to update intra-composite references
-    in the copy. See updateReferences().
+     Recursively copy this entire composite morph, recording the
+     correspondence between old and new morphs in the given dictionary.
+     This dictionary will be used to update intra-composite references
+     in the copy. See updateReferences().
 
-    Note: This default implementation copies ONLY morphs. If a morph
-    stores morphs in other properties that it wants to copy, then it
-    should override this method to do so. The same goes for morphs that
-    contain other complex data that should be copied when the morph is
-    duplicated.
-    */
+     Note: This default implementation copies ONLY morphs. If a morph
+     stores morphs in other properties that it wants to copy, then it
+     should override this method to do so. The same goes for morphs that
+     contain other complex data that should be copied when the morph is
+     duplicated.
+     */
     var c = this.copy();
     map.set(this, c);
     this.children.forEach(function (m) {
@@ -3683,11 +3723,11 @@ Morph.prototype.copyRecordingReferences = function (map) {
 
 Morph.prototype.updateReferences = function (map) {
     /*
-    Update intra-morph references within a composite morph that has
-    been copied. For example, if a button refers to morph X in the
-    orginal composite then the copy of that button in the new composite
-    should refer to the copy of X in new composite, not the original X.
-    */
+     Update intra-morph references within a composite morph that has
+     been copied. For example, if a button refers to morph X in the
+     orginal composite then the copy of that button in the new composite
+     should refer to the copy of X in new composite, not the original X.
+     */
     var properties = Object.keys(this),
         l = properties.length,
         property,
@@ -3699,7 +3739,9 @@ Morph.prototype.updateReferences = function (map) {
         value = this[property];
         if (value && value.isMorph) {
             reference = map.get(value);
-            if (reference) { this[property] = reference; }
+            if (reference) {
+                this[property] = reference;
+            }
         }
     }
 };
@@ -3714,9 +3756,9 @@ Morph.prototype.rootForGrab = function () {
         return this.parent;
     }
     if (this.parent === null ||
-            this.parent instanceof WorldMorph ||
-            this.parent instanceof FrameMorph ||
-            this.isDraggable === true) {
+        this.parent instanceof WorldMorph ||
+        this.parent instanceof FrameMorph ||
+        this.isDraggable === true) {
         return this;
     }
     return this.parent.rootForGrab();
@@ -3732,8 +3774,8 @@ Morph.prototype.isCorrectingOutsideDrag = function () {
 Morph.prototype.wantsDropOf = function (aMorph) {
     // default is to answer the general flag - change for my heirs
     if ((aMorph instanceof HandleMorph) ||
-            (aMorph instanceof MenuMorph) ||
-            (aMorph instanceof InspectorMorph)) {
+        (aMorph instanceof MenuMorph) ||
+        (aMorph instanceof InspectorMorph)) {
         return false;
     }
     return this.acceptsDrops;
@@ -3765,12 +3807,10 @@ Morph.prototype.situation = function () {
     return null;
 };
 
-Morph.prototype.slideBackTo = function (
-    situation,
-    msecs,
-    onBeforeDrop,
-    onComplete
-) {
+Morph.prototype.slideBackTo = function (situation,
+                                        msecs,
+                                        onBeforeDrop,
+                                        onComplete) {
     var pos = situation.origin.position().add(situation.position),
         myself = this;
     this.glideTo(
@@ -3779,12 +3819,18 @@ Morph.prototype.slideBackTo = function (
         null, // easing
         function () {
             situation.origin.add(myself);
-            if (onBeforeDrop) {onBeforeDrop(); }
-            if (myself.justDropped) {myself.justDropped(); }
+            if (onBeforeDrop) {
+                onBeforeDrop();
+            }
+            if (myself.justDropped) {
+                myself.justDropped();
+            }
             if (situation.origin.reactToDropOf) {
                 situation.origin.reactToDropOf(myself);
             }
-            if (onComplete) {onComplete(); }
+            if (onComplete) {
+                onComplete();
+            }
         }
     );
 };
@@ -3795,16 +3841,24 @@ Morph.prototype.glideTo = function (endPoint, msecs, easing, onComplete) {
     var world = this.world(),
         myself = this;
     world.animations.push(new Animation(
-        function (x) {myself.setLeft(x); },
-        function () {return myself.left(); },
+        function (x) {
+            myself.setLeft(x);
+        },
+        function () {
+            return myself.left();
+        },
         -(this.left() - endPoint.x),
         msecs || 100,
         easing,
         onComplete
     ));
     world.animations.push(new Animation(
-        function (y) {myself.setTop(y); },
-        function () {return myself.top(); },
+        function (y) {
+            myself.setTop(y);
+        },
+        function () {
+            return myself.top();
+        },
         -(this.top() - endPoint.y),
         msecs || 100,
         easing
@@ -3825,13 +3879,17 @@ Morph.prototype.fadeTo = function (endAlpha, msecs, easing, onComplete) {
             myself.alpha = n;
             myself.changed();
         },
-        function () {return myself.alpha; },
+        function () {
+            return myself.alpha;
+        },
         endAlpha - this.alpha,
         msecs || 200,
         easing,
         function () {
             myself.alpha = oldAlpha;
-            if (onComplete) {onComplete(); }
+            if (onComplete) {
+                onComplete();
+            }
         }
     ));
 };
@@ -3844,7 +3902,9 @@ Morph.prototype.perish = function (msecs, onComplete) {
         null,
         function () {
             myself.destroy();
-            if (onComplete) {onComplete(); }
+            if (onComplete) {
+                onComplete();
+            }
         }
     );
 };
@@ -3910,16 +3970,14 @@ Morph.prototype.inform = function (msg) {
     m.popUpCenteredAtHand(this.world());
 };
 
-Morph.prototype.prompt = function (
-    msg,
-    callback,
-    environment,
-    defaultContents,
-    width,
-    floorNum,
-    ceilingNum,
-    isRounded
-) {
+Morph.prototype.prompt = function (msg,
+                                   callback,
+                                   environment,
+                                   defaultContents,
+                                   width,
+                                   floorNum,
+                                   ceilingNum,
+                                   isRounded) {
     var menu, entryField, slider, isNumeric;
     if (ceilingNum) {
         isNumeric = true;
@@ -3986,12 +4044,10 @@ Morph.prototype.prompt = function (
     entryField.text.edit();
 };
 
-Morph.prototype.pickColor = function (
-    msg,
-    callback,
-    environment,
-    defaultContents
-) {
+Morph.prototype.pickColor = function (msg,
+                                      callback,
+                                      environment,
+                                      defaultContents) {
     var menu, colorPicker;
     menu = new MenuMorph(
         callback || null,
@@ -4057,11 +4113,11 @@ Morph.prototype.hierarchyMenu = function () {
                 each.toString().slice(0, 50),
                 each.developersMenu()
             );
-        /*
-            menu.addItem(each.toString().slice(0, 50), function () {
-                each.developersMenu().popUpAtHand(world);
-            });
-        */
+            /*
+             menu.addItem(each.toString().slice(0, 50), function () {
+             each.developersMenu().popUpAtHand(world);
+             });
+             */
         }
     });
     return menu;
@@ -4110,7 +4166,7 @@ Morph.prototype.developersMenu = function () {
         "resize...",
         'resize',
         'show a handle\nwhich can be dragged\nto change this morph\'s' +
-            ' extent'
+        ' extent'
     );
     menu.addLine();
     menu.addItem(
@@ -4241,7 +4297,7 @@ Morph.prototype.allEntryFields = function () {
     return this.allChildren().filter(function (each) {
         return each.isEditable &&
             (each instanceof StringMorph ||
-                each instanceof TextMorph);
+            each instanceof TextMorph);
     });
 };
 
@@ -4269,11 +4325,11 @@ Morph.prototype.previousEntryField = function (current) {
 };
 
 Morph.prototype.tab = function (editField) {
-/*
-    the <tab> key was pressed in one of my edit fields.
-    invoke my "nextTab()" function if it exists, else
-    propagate it up my owner chain.
-*/
+    /*
+     the <tab> key was pressed in one of my edit fields.
+     invoke my "nextTab()" function if it exists, else
+     propagate it up my owner chain.
+     */
     if (this.nextTab) {
         this.nextTab(editField);
     } else if (this.parent) {
@@ -4282,11 +4338,11 @@ Morph.prototype.tab = function (editField) {
 };
 
 Morph.prototype.backTab = function (editField) {
-/*
-    the <back tab> key was pressed in one of my edit fields.
-    invoke my "previousTab()" function if it exists, else
-    propagate it up my owner chain.
-*/
+    /*
+     the <back tab> key was pressed in one of my edit fields.
+     invoke my "previousTab()" function if it exists, else
+     propagate it up my owner chain.
+     */
     if (this.previousTab) {
         this.previousTab(editField);
     } else if (this.parent) {
@@ -4295,26 +4351,26 @@ Morph.prototype.backTab = function (editField) {
 };
 
 /*
-    the following are examples of what the navigation methods should
-    look like. Insert these at the World level for fallback, and at lower
-    levels in the Morphic tree (e.g. dialog boxes) for a more fine-grained
-    control over the tabbing cycle.
+ the following are examples of what the navigation methods should
+ look like. Insert these at the World level for fallback, and at lower
+ levels in the Morphic tree (e.g. dialog boxes) for a more fine-grained
+ control over the tabbing cycle.
 
-Morph.prototype.nextTab = function (editField) {
-    var next = this.nextEntryField(editField);
-    editField.clearSelection();
-    next.selectAll();
-    next.edit();
-};
+ Morph.prototype.nextTab = function (editField) {
+ var next = this.nextEntryField(editField);
+ editField.clearSelection();
+ next.selectAll();
+ next.edit();
+ };
 
-Morph.prototype.previousTab = function (editField) {
-    var prev = this.previousEntryField(editField);
-    editField.clearSelection();
-    prev.selectAll();
-    prev.edit();
-};
+ Morph.prototype.previousTab = function (editField) {
+ var prev = this.previousEntryField(editField);
+ editField.clearSelection();
+ prev.selectAll();
+ prev.edit();
+ };
 
-*/
+ */
 
 // Morph events:
 
@@ -4355,11 +4411,11 @@ Morph.prototype.isTouching = function (otherMorph) {
         .getImageData(1, 1, oImg.width, oImg.height)
         .data;
     return detect(
-        data,
-        function (each) {
-            return each !== 0;
-        }
-    ) !== null;
+            data,
+            function (each) {
+                return each !== 0;
+            }
+        ) !== null;
 };
 
 Morph.prototype.overlappingImage = function (otherMorph) {
@@ -4420,19 +4476,17 @@ function HandleMorph(target, minX, minY, insetX, insetY, type) {
     this.init(target, minX, minY, insetX, insetY, type);
 }
 
-HandleMorph.prototype.init = function (
-    target,
-    minX,
-    minY,
-    insetX,
-    insetY,
-    type
-) {
+HandleMorph.prototype.init = function (target,
+                                       minX,
+                                       minY,
+                                       insetX,
+                                       insetY,
+                                       type) {
     var size = MorphicPreferences.handleSize;
     this.target = target || null;
     this.minExtent = new Point(minX || 0, minY || 0);
     this.inset = new Point(insetX || 0, insetY || insetX || 0);
-    this.type =  type || 'resize'; // also: 'move', 'moveCenter', 'movePivot'
+    this.type = type || 'resize'; // also: 'move', 'moveCenter', 'movePivot'
     HandleMorph.uber.init.call(this);
     this.color = new Color(255, 255, 255);
     this.isDraggable = false;
@@ -4500,11 +4554,9 @@ HandleMorph.prototype.drawCrosshairsOnCanvas = function (aCanvas, fract) {
     ctx.stroke();
 };
 
-HandleMorph.prototype.drawOnCanvas = function (
-    aCanvas,
-    color,
-    shadowColor
-) {
+HandleMorph.prototype.drawOnCanvas = function (aCanvas,
+                                               color,
+                                               shadowColor) {
     var context = aCanvas.getContext('2d'),
         isSquare = (this.type.indexOf('move') === 0),
         p1,
@@ -4996,7 +5048,7 @@ ColorPaletteMorph.prototype.developersMenu = function () {
         'set target',
         "setTarget",
         'choose another morph\nwhose color property\n will be' +
-            ' controlled by this one'
+        ' controlled by this one'
     );
     return menu;
 };
@@ -5121,9 +5173,9 @@ ColorPickerMorph.prototype.buildSubmorphs = function () {
     gpal.setPosition(cpal.bottomLeft());
     this.add(gpal);
     x = (gpal.left() +
-        Math.floor((gpal.width() - this.feedback.width()) / 2));
+    Math.floor((gpal.width() - this.feedback.width()) / 2));
     y = gpal.bottom() + Math.floor((this.bottom() -
-        gpal.bottom() - this.feedback.height()) / 2);
+            gpal.bottom() - this.feedback.height()) / 2);
     this.feedback.setPosition(new Point(x, y));
     this.add(this.feedback);
 };
@@ -5206,7 +5258,7 @@ CursorMorph.prototype.init = function (aStringOrTextMorph) {
     this.drawNew();
     this.image.getContext('2d').font = this.target.font();
     if (this.target instanceof TextMorph &&
-            (this.target.alignment !== 'left')) {
+        (this.target.alignment !== 'left')) {
         this.target.setAlignmentToLeft();
     }
     this.gotoSlot(this.slot);
@@ -5250,7 +5302,7 @@ CursorMorph.prototype.initializeClipboardHandler = function () {
 
             // Make sure tab prevents default
             if (event.key === 'U+0009' ||
-                    event.key === 'Tab') {
+                event.key === 'Tab') {
                 myself.processKeyPress(event);
                 event.preventDefault();
             }
@@ -5340,70 +5392,70 @@ CursorMorph.prototype.processKeyDown = function (event) {
     }
 
     switch (event.keyCode) {
-    case 37:
-        if (selecting && !shift && !wordNavigation) {
-            this.gotoSlot(Math.min(this.target.startMark, this.target.endMark));
-            this.target.clearSelection();
-        } else {
-            this.goLeft(
+        case 37:
+            if (selecting && !shift && !wordNavigation) {
+                this.gotoSlot(Math.min(this.target.startMark, this.target.endMark));
+                this.target.clearSelection();
+            } else {
+                this.goLeft(
                     shift,
                     wordNavigation ?
                         this.slot - this.target.previousWordFrom(this.slot)
                         : 1);
-        }
-        this.keyDownEventUsed = true;
-        break;
-    case 39:
-        if (selecting && !shift && !wordNavigation) {
-            this.gotoSlot(Math.max(this.target.startMark, this.target.endMark));
-            this.target.clearSelection();
-        } else {
-            this.goRight(
+            }
+            this.keyDownEventUsed = true;
+            break;
+        case 39:
+            if (selecting && !shift && !wordNavigation) {
+                this.gotoSlot(Math.max(this.target.startMark, this.target.endMark));
+                this.target.clearSelection();
+            } else {
+                this.goRight(
                     shift,
                     wordNavigation ?
                         this.target.nextWordFrom(this.slot) - this.slot
                         : 1);
-        }
-        this.keyDownEventUsed = true;
-        break;
-    case 38:
-        this.goUp(shift);
-        this.keyDownEventUsed = true;
-        break;
-    case 40:
-        this.goDown(shift);
-        this.keyDownEventUsed = true;
-        break;
-    case 36:
-        this.goHome(shift);
-        this.keyDownEventUsed = true;
-        break;
-    case 35:
-        this.goEnd(shift);
-        this.keyDownEventUsed = true;
-        break;
-    case 46:
-        this.deleteRight();
-        this.keyDownEventUsed = true;
-        break;
-    case 8:
-        this.deleteLeft();
-        this.keyDownEventUsed = true;
-        break;
-    case 13:
-        if ((this.target instanceof StringMorph) || shift) {
-            this.accept();
-        } else {
-            this.insert('\n');
-        }
-        this.keyDownEventUsed = true;
-        break;
-    case 27:
-        this.cancel();
-        this.keyDownEventUsed = true;
-        break;
-    default:
-        nop();
+            }
+            this.keyDownEventUsed = true;
+            break;
+        case 38:
+            this.goUp(shift);
+            this.keyDownEventUsed = true;
+            break;
+        case 40:
+            this.goDown(shift);
+            this.keyDownEventUsed = true;
+            break;
+        case 36:
+            this.goHome(shift);
+            this.keyDownEventUsed = true;
+            break;
+        case 35:
+            this.goEnd(shift);
+            this.keyDownEventUsed = true;
+            break;
+        case 46:
+            this.deleteRight();
+            this.keyDownEventUsed = true;
+            break;
+        case 8:
+            this.deleteLeft();
+            this.keyDownEventUsed = true;
+            break;
+        case 13:
+            if ((this.target instanceof StringMorph) || shift) {
+                this.accept();
+            } else {
+                this.insert('\n');
+            }
+            this.keyDownEventUsed = true;
+            break;
+        case 27:
+            this.cancel();
+            this.keyDownEventUsed = true;
+            break;
+        default:
+            nop();
         // this.inspectKeyEvent(event);
     }
     // notify target's parent of key event
@@ -5413,13 +5465,13 @@ CursorMorph.prototype.processKeyDown = function (event) {
 // CursorMorph navigation:
 
 /*
-// original non-scrolling code, commented out in case we need to fall back:
+ // original non-scrolling code, commented out in case we need to fall back:
 
-CursorMorph.prototype.gotoSlot = function (newSlot) {
-    this.setPosition(this.target.slotPosition(newSlot));
-    this.slot = Math.max(newSlot, 0);
-};
-*/
+ CursorMorph.prototype.gotoSlot = function (newSlot) {
+ this.setPosition(this.target.slotPosition(newSlot));
+ this.slot = Math.max(newSlot, 0);
+ };
+ */
 
 CursorMorph.prototype.gotoSlot = function (slot) {
     var length = this.target.text.length,
@@ -5440,7 +5492,7 @@ CursorMorph.prototype.gotoSlot = function (slot) {
             pos.x = left;
         }
         if (this.target.right() < right &&
-                right - this.target.width() < left) {
+            right - this.target.width() < left) {
             pos.x += right - this.target.right();
             this.target.setRight(right);
         }
@@ -5448,8 +5500,8 @@ CursorMorph.prototype.gotoSlot = function (slot) {
     this.show();
     this.setPosition(pos);
     if (this.parent
-            && this.parent.parent instanceof ScrollFrameMorph
-            && this.target.isScrollable) {
+        && this.parent.parent instanceof ScrollFrameMorph
+        && this.target.isScrollable) {
         this.parent.parent.scrollCursorIntoView(this);
     }
 };
@@ -5549,8 +5601,8 @@ CursorMorph.prototype.insert = function (aChar, shiftKey) {
         return this.target.tab(this.target);
     }
     if (!this.target.isNumeric ||
-            !isNaN(parseFloat(aChar)) ||
-            contains(['-', '.'], aChar)) {
+        !isNaN(parseFloat(aChar)) ||
+        contains(['-', '.'], aChar)) {
         if (this.target.selection() !== '') {
             this.gotoSlot(this.target.selectionStartSlot());
             this.target.deleteSelection();
@@ -5673,20 +5725,20 @@ CursorMorph.prototype.inspectKeyEvent = function (event) {
     // private
     this.inform(
         'Key pressed: ' +
-            String.fromCharCode(event.charCode) +
-            '\n------------------------' +
-            '\ncharCode: ' +
-            event.charCode.toString() +
-            '\nkeyCode: ' +
-            event.keyCode.toString() +
-            '\nshiftKey: ' +
-            event.shiftKey.toString() +
-            '\naltKey: ' +
-            event.altKey.toString() +
-            '\nctrlKey: ' +
-            event.ctrlKey.toString() +
-            '\ncmdKey: ' +
-            event.metaKey.toString()
+        String.fromCharCode(event.charCode) +
+        '\n------------------------' +
+        '\ncharCode: ' +
+        event.charCode.toString() +
+        '\nkeyCode: ' +
+        event.keyCode.toString() +
+        '\nshiftKey: ' +
+        event.shiftKey.toString() +
+        '\naltKey: ' +
+        event.altKey.toString() +
+        '\nctrlKey: ' +
+        event.ctrlKey.toString() +
+        '\ncmdKey: ' +
+        event.metaKey.toString()
     );
 };
 
@@ -5895,10 +5947,10 @@ BoxMorph.prototype.numericalSetters = function () {
 // SpeechBubbleMorph ///////////////////////////////////////////////////
 
 /*
-    I am a comic-style speech bubble that can display either a string,
-    a Morph, a Canvas or a toString() representation of anything else.
-    If I am invoked using popUp() I behave like a tool tip.
-*/
+ I am a comic-style speech bubble that can display either a string,
+ a Morph, a Canvas or a toString() representation of anything else.
+ If I am invoked using popUp() I behave like a tool tip.
+ */
 
 // SpeechBubbleMorph: referenced constructors
 
@@ -5912,27 +5964,23 @@ SpeechBubbleMorph.uber = BoxMorph.prototype;
 
 // SpeechBubbleMorph instance creation:
 
-function SpeechBubbleMorph(
-    contents,
-    color,
-    edge,
-    border,
-    borderColor,
-    padding,
-    isThought
-) {
+function SpeechBubbleMorph(contents,
+                           color,
+                           edge,
+                           border,
+                           borderColor,
+                           padding,
+                           isThought) {
     this.init(contents, color, edge, border, borderColor, padding, isThought);
 }
 
-SpeechBubbleMorph.prototype.init = function (
-    contents,
-    color,
-    edge,
-    border,
-    borderColor,
-    padding,
-    isThought
-) {
+SpeechBubbleMorph.prototype.init = function (contents,
+                                             color,
+                                             edge,
+                                             border,
+                                             borderColor,
+                                             padding,
+                                             isThought) {
     this.isPointingRight = true; // orientation of text
     this.contents = contents || '';
     this.padding = padding || 0; // additional vertical pixels
@@ -6025,11 +6073,9 @@ SpeechBubbleMorph.prototype.drawNew = function () {
     ));
 };
 
-SpeechBubbleMorph.prototype.outlinePath = function (
-    context,
-    radius,
-    inset
-) {
+SpeechBubbleMorph.prototype.outlinePath = function (context,
+                                                    radius,
+                                                    inset) {
     var offset = radius + inset,
         w = this.width(),
         h = this.height(),
@@ -6131,9 +6177,9 @@ SpeechBubbleMorph.prototype.outlinePath = function (
 // SpeechBubbleMorph shadow
 
 /*
-    only take the 'plain' image, so the box rounding and the
-    shadow doesn't become conflicted by embedded scrolling panes
-*/
+ only take the 'plain' image, so the box rounding and the
+ shadow doesn't become conflicted by embedded scrolling panes
+ */
 
 SpeechBubbleMorph.prototype.shadowImage = function (off, color) {
     // fallback for Windows Chrome-Shadow bug
@@ -6257,7 +6303,7 @@ CircleBoxMorph.prototype.drawNew = function () {
             this.bounds.corner.subtract(new Point(radius, 0))
         );
     }
-    points = [ center1.subtract(this.bounds.origin),
+    points = [center1.subtract(this.bounds.origin),
         center2.subtract(this.bounds.origin)];
     points.forEach(function (center) {
         context.fillStyle = myself.color.toString();
@@ -6551,14 +6597,12 @@ function SliderMorph(start, stop, value, size, orientation, color) {
     );
 }
 
-SliderMorph.prototype.init = function (
-    start,
-    stop,
-    value,
-    size,
-    orientation,
-    color
-) {
+SliderMorph.prototype.init = function (start,
+                                       stop,
+                                       value,
+                                       size,
+                                       orientation,
+                                       color) {
     this.target = null;
     this.action = null;
     this.start = start;
@@ -6604,7 +6648,7 @@ SliderMorph.prototype.drawNew = function () {
     SliderMorph.uber.drawNew.call(this);
     this.button.orientation = this.orientation;
     if (this.orientation === 'vertical') {
-        bw  = this.width() - 2;
+        bw = this.width() - 2;
         bh = Math.max(bw, Math.round(this.height() * this.ratio()));
         this.button.silentSetExtent(new Point(bw, bh));
         posX = 1;
@@ -6614,7 +6658,7 @@ SliderMorph.prototype.drawNew = function () {
         );
     } else {
         bh = this.height() - 2;
-        bw  = Math.max(bh, Math.round(this.width() * this.ratio()));
+        bw = Math.max(bh, Math.round(this.width() * this.ratio()));
         this.button.silentSetExtent(new Point(bw, bh));
         posY = 1;
         posX = Math.min(
@@ -6712,7 +6756,7 @@ SliderMorph.prototype.developersMenu = function () {
         'set target',
         "setTarget",
         'select another morph\nwhose numerical property\nwill be ' +
-            'controlled by this one'
+        'controlled by this one'
     );
     return menu;
 };
@@ -6744,7 +6788,9 @@ SliderMorph.prototype.setStart = function (num, noUpdate) {
         }
     }
     this.value = Math.max(this.value, this.start);
-    if (!noUpdate) {this.updateTarget(); }
+    if (!noUpdate) {
+        this.updateTarget();
+    }
     this.drawNew();
     this.changed();
 };
@@ -6761,7 +6807,9 @@ SliderMorph.prototype.setStop = function (num, noUpdate) {
         }
     }
     this.value = Math.min(this.value, this.stop);
-    if (!noUpdate) {this.updateTarget(); }
+    if (!noUpdate) {
+        this.updateTarget();
+    }
     this.drawNew();
     this.changed();
 };
@@ -6784,7 +6832,9 @@ SliderMorph.prototype.setSize = function (num, noUpdate) {
         }
     }
     this.value = Math.min(this.value, this.stop - this.size);
-    if (!noUpdate) {this.updateTarget(); }
+    if (!noUpdate) {
+        this.updateTarget();
+    }
     this.drawNew();
     this.changed();
 };
@@ -7024,12 +7074,14 @@ InspectorMorph.prototype.updateCurrentSelection = function () {
         root = this.root();
 
     if (root &&
-            (root.keyboardReceiver instanceof CursorMorph) &&
-            (root.keyboardReceiver.target === currentTxt)) {
+        (root.keyboardReceiver instanceof CursorMorph) &&
+        (root.keyboardReceiver.target === currentTxt)) {
         this.hasUserEditedDetails = true;
         return;
     }
-    if (isNil(sel) || this.hasUserEditedDetails) {return; }
+    if (isNil(sel) || this.hasUserEditedDetails) {
+        return;
+    }
     val = this.target[sel];
     this.currentProperty = val;
     if (isNil(val)) {
@@ -7039,7 +7091,9 @@ InspectorMorph.prototype.updateCurrentSelection = function () {
     } else {
         txt = val.toString();
     }
-    if (currentTxt.text === txt) {return; }
+    if (currentTxt.text === txt) {
+        return;
+    }
     cnts = new TextMorph(txt);
     cnts.isEditable = true;
     cnts.enableSelecting();
@@ -7084,7 +7138,9 @@ InspectorMorph.prototype.buildPanes = function () {
 
     doubleClickAction = function () {
         var world, inspector;
-        if (!isObject(myself.currentProperty)) {return; }
+        if (!isObject(myself.currentProperty)) {
+            return;
+        }
         world = myself.world();
         inspector = new InspectorMorph(
             myself.currentProperty
@@ -7099,18 +7155,18 @@ InspectorMorph.prototype.buildPanes = function () {
         this.target instanceof Array ? attribs : attribs.sort(),
         null, // label getter
         this.markOwnProperties ?
-                [ // format list
-                    [ // format element: [color, predicate(element]
-                        new Color(0, 0, 180),
-                        function (element) {
-                            return Object.prototype.hasOwnProperty.call(
-                                myself.target,
-                                element
-                            );
-                        }
-                    ]
+            [ // format list
+                [ // format element: [color, predicate(element]
+                    new Color(0, 0, 180),
+                    function (element) {
+                        return Object.prototype.hasOwnProperty.call(
+                            myself.target,
+                            element
+                        );
+                    }
                 ]
-                : null,
+            ]
+            : null,
         doubleClickAction
     );
 
@@ -7187,7 +7243,7 @@ InspectorMorph.prototype.buildPanes = function () {
         menu.addLine();
         menu.addItem(
             (myself.markOwnProperties ?
-                    'un-mark own' : 'mark own'),
+                'un-mark own' : 'mark own'),
             function () {
                 myself.markOwnProperties = !myself.markOwnProperties;
                 myself.buildPanes();
@@ -7228,8 +7284,8 @@ InspectorMorph.prototype.buildPanes = function () {
         } else {
             myself.inform(
                 (myself.currentProperty === null ?
-                        'null' : typeof myself.currentProperty) +
-                            '\nis not inspectable'
+                    'null' : typeof myself.currentProperty) +
+                '\nis not inspectable'
             );
         }
     };
@@ -7440,7 +7496,9 @@ InspectorMorph.prototype.removeProperty = function () {
 InspectorMorph.prototype.step = function () {
     this.updateCurrentSelection();
     var lbl = this.target.toString();
-    if (this.label.text === lbl) {return; }
+    if (this.label.text === lbl) {
+        return;
+    }
     this.label.text = lbl;
     this.label.drawNew();
     this.fixLayout();
@@ -7473,24 +7531,24 @@ function MenuMorph(target, title, environment, fontSize) {
     this.init(target, title, environment, fontSize);
 
     /*
-    if target is a function, use it as callback:
-    execute target as callback function with the action property
-    of the triggered MenuItem as argument.
-    Use the environment, if it is specified.
-    Note: if action is also a function, instead of becoming
-    the argument itself it will be called to answer the argument.
-    For selections, Yes/No Choices etc.
+     if target is a function, use it as callback:
+     execute target as callback function with the action property
+     of the triggered MenuItem as argument.
+     Use the environment, if it is specified.
+     Note: if action is also a function, instead of becoming
+     the argument itself it will be called to answer the argument.
+     For selections, Yes/No Choices etc.
 
-    else (if target is not a function):
+     else (if target is not a function):
 
-        if action is a function:
-        execute the action with target as environment (can be null)
-        for lambdafied (inline) actions
+     if action is a function:
+     execute the action with target as environment (can be null)
+     for lambdafied (inline) actions
 
-        else if action is a String:
-        treat it as function property of target and execute it
-        for selector-like actions
-    */
+     else if action is a String:
+     treat it as function property of target and execute it
+     for selector-like actions
+     */
 }
 
 MenuMorph.prototype.init = function (target, title, environment, fontSize) {
@@ -7518,24 +7576,23 @@ MenuMorph.prototype.init = function (target, title, environment, fontSize) {
     this.edge = null;
 };
 
-MenuMorph.prototype.addItem = function (
-    labelString,
-    action,
-    hint,
-    color,
-    bold, // bool
-    italic, // bool
-    doubleClickAction, // optional, when used as list contents
-    shortcut // optional string, icon (Morph or Canvas) or tuple [icon, string]
+MenuMorph.prototype.addItem = function (labelString,
+                                        action,
+                                        hint,
+                                        color,
+                                        bold, // bool
+                                        italic, // bool
+                                        doubleClickAction, // optional, when used as list contents
+                                        shortcut // optional string, icon (Morph or Canvas) or tuple [icon, string]
 ) {
     /*
-    labelString is normally a single-line string. But it can also be one
-    of the following:
+     labelString is normally a single-line string. But it can also be one
+     of the following:
 
-        * a multi-line string (containing line breaks)
-        * an icon (either a Morph or a Canvas)
-        * a tuple of format: [icon, string]
-    */
+     * a multi-line string (containing line breaks)
+     * an icon (either a Morph or a Canvas)
+     * a tuple of format: [icon, string]
+     */
     this.items.push([
         localize(labelString || 'close'),
         action || nop,
@@ -7624,8 +7681,8 @@ MenuMorph.prototype.drawNew = function () {
     this.items.forEach(function (tuple) {
         isLine = false;
         if (tuple instanceof StringFieldMorph ||
-                tuple instanceof ColorPickerMorph ||
-                tuple instanceof SliderMorph) {
+            tuple instanceof ColorPickerMorph ||
+            tuple instanceof SliderMorph) {
             item = tuple;
         } else if (tuple[0] === 0) {
             isLine = true;
@@ -7678,11 +7735,11 @@ MenuMorph.prototype.maxWidth = function () {
             w = Math.max(
                 w,
                 item.label.width() + 8 +
-                    (item.shortcut ? item.shortcut.width() + 4 : 0)
+                (item.shortcut ? item.shortcut.width() + 4 : 0)
             );
         } else if ((item instanceof StringFieldMorph) ||
-                (item instanceof ColorPickerMorph) ||
-                (item instanceof SliderMorph)) {
+            (item instanceof ColorPickerMorph) ||
+            (item instanceof SliderMorph)) {
             w = Math.max(w, item.width());
         }
     });
@@ -7801,27 +7858,27 @@ MenuMorph.prototype.getFocus = function () {
 MenuMorph.prototype.processKeyDown = function (event) {
     // console.log(event.keyCode);
     switch (event.keyCode) {
-    case 13: // 'enter'
-    case 32: // 'space'
-        if (this.selection) {
-            this.selection.mouseClickLeft();
-            if (this.submenu) {
-                this.submenu.getFocus();
+        case 13: // 'enter'
+        case 32: // 'space'
+            if (this.selection) {
+                this.selection.mouseClickLeft();
+                if (this.submenu) {
+                    this.submenu.getFocus();
+                }
             }
-        }
-        return;
-    case 27: // 'esc'
-        return this.destroy();
-    case 37: // 'left arrow'
-        return this.leaveSubmenu();
-    case 38: // 'up arrow'
-        return this.selectUp();
-    case 39: // 'right arrow'
-        return this.enterSubmenu();
-    case 40: // 'down arrow'
-        return this.selectDown();
-    default:
-        nop();
+            return;
+        case 27: // 'esc'
+            return this.destroy();
+        case 37: // 'left arrow'
+            return this.leaveSubmenu();
+        case 38: // 'up arrow'
+            return this.selectUp();
+        case 39: // 'right arrow'
+            return this.enterSubmenu();
+        case 40: // 'down arrow'
+            return this.selectDown();
+        default:
+            nop();
     }
 };
 
@@ -7926,18 +7983,16 @@ StringMorph.uber = Morph.prototype;
 
 // StringMorph instance creation:
 
-function StringMorph(
-    text,
-    fontSize,
-    fontStyle,
-    bold,
-    italic,
-    isNumeric,
-    shadowOffset,
-    shadowColor,
-    color,
-    fontName
-) {
+function StringMorph(text,
+                     fontSize,
+                     fontStyle,
+                     bold,
+                     italic,
+                     isNumeric,
+                     shadowOffset,
+                     shadowColor,
+                     color,
+                     fontName) {
     this.init(
         text,
         fontSize,
@@ -7952,18 +8007,16 @@ function StringMorph(
     );
 }
 
-StringMorph.prototype.init = function (
-    text,
-    fontSize,
-    fontStyle,
-    bold,
-    italic,
-    isNumeric,
-    shadowOffset,
-    shadowColor,
-    color,
-    fontName
-) {
+StringMorph.prototype.init = function (text,
+                                       fontSize,
+                                       fontStyle,
+                                       bold,
+                                       italic,
+                                       isNumeric,
+                                       shadowOffset,
+                                       shadowColor,
+                                       color,
+                                       fontName) {
     // additional properties:
     this.text = text || ((text === '') ? '' : 'StringMorph');
     this.fontSize = fontSize || 12;
@@ -8000,7 +8053,7 @@ StringMorph.prototype.toString = function () {
     // e.g. 'a StringMorph("Hello World")'
     return 'a ' +
         (this.constructor.name ||
-            this.constructor.toString().split(' ')[1].split('(')[0]) +
+        this.constructor.toString().split(' ')[1].split('(')[0]) +
         '("' + this.text.slice(0, 30) + '...")';
 };
 
@@ -8032,7 +8085,7 @@ StringMorph.prototype.drawNew = function () {
     var context, width, start, stop, i, p, c, x, y,
         shadowOffset = this.shadowOffset || new Point(),
         txt = this.isPassword ?
-                this.password('*', this.text.length) : this.text;
+            this.password('*', this.text.length) : this.text;
 
     // initialize my surface property
     this.image = newCanvas();
@@ -8141,7 +8194,7 @@ StringMorph.prototype.slotPosition = function (slot) {
     // answer the position point of the given index ("slot")
     // where the cursor should be placed
     var txt = this.isPassword ?
-                this.password('*', this.text.length) : this.text,
+            this.password('*', this.text.length) : this.text,
         dest = Math.min(Math.max(slot, 0), txt.length),
         context = this.image.getContext('2d'),
         xOffset,
@@ -8165,7 +8218,7 @@ StringMorph.prototype.slotAt = function (aPoint) {
     // so the cursor can be moved accordingly
 
     var txt = this.isPassword ?
-                this.password('*', this.text.length) : this.text,
+            this.password('*', this.text.length) : this.text,
         idx = 0,
         charX = 0,
         context = this.image.getContext('2d');
@@ -8175,8 +8228,8 @@ StringMorph.prototype.slotAt = function (aPoint) {
         idx += 1;
         if (idx === txt.length) {
             if ((context.measureText(txt).width -
-                    (context.measureText(txt[idx - 1]).width / 2)) <
-                    (aPoint.x - this.left())) {
+                (context.measureText(txt[idx - 1]).width / 2)) <
+                (aPoint.x - this.left())) {
                 return idx;
             }
         }
@@ -8184,7 +8237,7 @@ StringMorph.prototype.slotAt = function (aPoint) {
 
     // see where our click fell with respect to the middle of the char
     if (aPoint.x - this.left() >
-            charX - context.measureText(txt[idx - 1]).width / 2) {
+        charX - context.measureText(txt[idx - 1]).width / 2) {
         return idx;
     } else {
         return idx - 1;
@@ -8215,7 +8268,7 @@ StringMorph.prototype.previousWordFrom = function (aSlot) {
     // answer the slot (index) slots indicating the position of the
     // previous word to the left of aSlot
     var index = aSlot - 1;
-    
+
     // while the current character is non-word one, we skip it, so that
     // if we are in the middle of a non-alphanumeric sequence, we'll get
     // right to the beginning of the previous word
@@ -8234,7 +8287,7 @@ StringMorph.prototype.previousWordFrom = function (aSlot) {
 
 StringMorph.prototype.nextWordFrom = function (aSlot) {
     var index = aSlot;
-    
+
     while (index < this.endOfLine() && !isWordChar(this.text[index])) {
         index += 1;
     }
@@ -8411,8 +8464,8 @@ StringMorph.prototype.selectionStartSlot = function () {
 
 StringMorph.prototype.clearSelection = function () {
     if (!this.currentlySelecting &&
-            isNil(this.startMark) &&
-            isNil(this.endMark)) {
+        isNil(this.startMark) &&
+        isNil(this.endMark)) {
         return;
     }
     this.currentlySelecting = false;
@@ -8509,7 +8562,7 @@ StringMorph.prototype.mouseDoubleClick = function (pos) {
     } else {
         this.escalateEvent('mouseDoubleClick', pos);
     }
- 
+
 };
 
 StringMorph.prototype.selectWordAt = function (slot) {
@@ -8537,7 +8590,7 @@ StringMorph.prototype.selectBetweenWordsAt = function (slot) {
     this.endMark = cursor.slot;
 
     while (this.endMark < this.text.length
-            && !isWordChar(this.text[this.endMark])) {
+    && !isWordChar(this.text[this.endMark])) {
         this.endMark += 1;
     }
 
@@ -8559,14 +8612,16 @@ StringMorph.prototype.enableSelecting = function () {
                 this.startMark = this.slotAt(pos);
                 this.endMark = this.startMark;
                 this.currentlySelecting = true;
-                if (!already) {this.escalateEvent('mouseDownLeft', pos); }
+                if (!already) {
+                    this.escalateEvent('mouseDownLeft', pos);
+                }
             }
         }
     };
     this.mouseMove = function (pos) {
         if (this.isEditable &&
-                this.currentlySelecting &&
-                (!this.isDraggable)) {
+            this.currentlySelecting &&
+            (!this.isDraggable)) {
             var newMark = this.slotAt(pos);
             if (newMark !== this.endMark) {
                 this.endMark = newMark;
@@ -8594,18 +8649,16 @@ TextMorph.uber = Morph.prototype;
 
 // TextMorph instance creation:
 
-function TextMorph(
-    text,
-    fontSize,
-    fontStyle,
-    bold,
-    italic,
-    alignment,
-    width,
-    fontName,
-    shadowOffset,
-    shadowColor
-) {
+function TextMorph(text,
+                   fontSize,
+                   fontStyle,
+                   bold,
+                   italic,
+                   alignment,
+                   width,
+                   fontName,
+                   shadowOffset,
+                   shadowColor) {
     this.init(text,
         fontSize,
         fontStyle,
@@ -8618,18 +8671,16 @@ function TextMorph(
         shadowColor);
 }
 
-TextMorph.prototype.init = function (
-    text,
-    fontSize,
-    fontStyle,
-    bold,
-    italic,
-    alignment,
-    width,
-    fontName,
-    shadowOffset,
-    shadowColor
-) {
+TextMorph.prototype.init = function (text,
+                                     fontSize,
+                                     fontStyle,
+                                     bold,
+                                     italic,
+                                     alignment,
+                                     width,
+                                     fontName,
+                                     shadowOffset,
+                                     shadowColor) {
     // additional properties:
     this.text = text || (text === '' ? text : 'TextMorph');
     this.words = [];
@@ -8891,7 +8942,7 @@ TextMorph.prototype.slotAt = function (aPoint) {
         context = this.image.getContext('2d');
 
     while (aPoint.y - this.top() >
-            ((fontHeight(this.fontSize) + shadowHeight) * row)) {
+    ((fontHeight(this.fontSize) + shadowHeight) * row)) {
         row += 1;
     }
     row = Math.max(row, 1);
@@ -8903,7 +8954,7 @@ TextMorph.prototype.slotAt = function (aPoint) {
 
     // see where our click fell with respect to the middle of the char
     if (aPoint.x - this.left() >
-            charX - context.measureText(this.lines[row - 1][col]).width / 2) {
+        charX - context.measureText(this.lines[row - 1][col]).width / 2) {
         return this.lineSlots[Math.max(row - 1, 0)] + col;
     } else {
         return this.lineSlots[Math.max(row - 1, 0)] + col - 1;
@@ -9142,19 +9193,17 @@ TriggerMorph.uber = Morph.prototype;
 
 // TriggerMorph instance creation:
 
-function TriggerMorph(
-    target,
-    action,
-    labelString,
-    fontSize,
-    fontStyle,
-    environment,
-    hint,
-    labelColor,
-    labelBold,
-    labelItalic,
-    doubleClickAction
-) {
+function TriggerMorph(target,
+                      action,
+                      labelString,
+                      fontSize,
+                      fontStyle,
+                      environment,
+                      hint,
+                      labelColor,
+                      labelBold,
+                      labelItalic,
+                      doubleClickAction) {
     this.init(
         target,
         action,
@@ -9170,19 +9219,17 @@ function TriggerMorph(
     );
 }
 
-TriggerMorph.prototype.init = function (
-    target,
-    action,
-    labelString,
-    fontSize,
-    fontStyle,
-    environment,
-    hint,
-    labelColor,
-    labelBold,
-    labelItalic,
-    doubleClickAction
-) {
+TriggerMorph.prototype.init = function (target,
+                                        action,
+                                        labelString,
+                                        fontSize,
+                                        fontStyle,
+                                        environment,
+                                        hint,
+                                        labelColor,
+                                        labelBold,
+                                        labelItalic,
+                                        doubleClickAction) {
     // additional properties:
     this.target = target || null;
     this.action = action || null;
@@ -9266,25 +9313,25 @@ TriggerMorph.prototype.createLabel = function () {
 
 TriggerMorph.prototype.trigger = function () {
     /*
-    if target is a function, use it as callback:
-    execute target as callback function with action as argument
-    in the environment as optionally specified.
-    Note: if action is also a function, instead of becoming
-    the argument itself it will be called to answer the argument.
-    for selections, Yes/No Choices etc. As second argument pass
-    myself, so I can be modified to reflect status changes, e.g.
-    inside a list box:
+     if target is a function, use it as callback:
+     execute target as callback function with action as argument
+     in the environment as optionally specified.
+     Note: if action is also a function, instead of becoming
+     the argument itself it will be called to answer the argument.
+     for selections, Yes/No Choices etc. As second argument pass
+     myself, so I can be modified to reflect status changes, e.g.
+     inside a list box:
 
-    else (if target is not a function):
+     else (if target is not a function):
 
-        if action is a function:
-        execute the action with target as environment (can be null)
-        for lambdafied (inline) actions
+     if action is a function:
+     execute the action with target as environment (can be null)
+     for lambdafied (inline) actions
 
-        else if action is a String:
-        treat it as function property of target and execute it
-        for selector-like actions
-    */
+     else if action is a String:
+     treat it as function property of target and execute it
+     for selector-like actions
+     */
     if (this.schedule) {
         this.schedule.isActive = false;
     }
@@ -9306,7 +9353,9 @@ TriggerMorph.prototype.trigger = function () {
 TriggerMorph.prototype.triggerDoubleClick = function () {
     // same as trigger() but use doubleClickAction instead of action property
     // note that specifying a doubleClickAction is optional
-    if (!this.doubleClickAction) {return; }
+    if (!this.doubleClickAction) {
+        return;
+    }
     if (this.schedule) {
         this.schedule.isActive = false;
     }
@@ -9381,7 +9430,9 @@ TriggerMorph.prototype.bubbleHelp = function (contents) {
         0,
         500,
         nop,
-        function () {myself.popUpbubbleHelp(contents); }
+        function () {
+            myself.popUpbubbleHelp(contents);
+        }
     );
     world.animations.push(this.schedule);
 };
@@ -9409,19 +9460,18 @@ MenuItemMorph.uber = TriggerMorph.prototype;
 
 // MenuItemMorph instance creation:
 
-function MenuItemMorph(
-    target,
-    action,
-    labelString, // can also be a Morph or a Canvas or a tuple: [icon, string]
-    fontSize,
-    fontStyle,
-    environment,
-    hint,
-    color,
-    bold,
-    italic,
-    doubleClickAction, // optional when used as list morph item
-    shortcut // optional string, Morph, Canvas or tuple: [icon, string]
+function MenuItemMorph(target,
+                       action,
+                       labelString, // can also be a Morph or a Canvas or a tuple: [icon, string]
+                       fontSize,
+                       fontStyle,
+                       environment,
+                       hint,
+                       color,
+                       bold,
+                       italic,
+                       doubleClickAction, // optional when used as list morph item
+                       shortcut // optional string, Morph, Canvas or tuple: [icon, string]
 ) {
     // additional properties:
     this.shortcutString = shortcut || null;
@@ -9628,19 +9678,25 @@ MenuItemMorph.prototype.delaySubmenu = function () {
         0,
         500,
         nop,
-        function () {myself.popUpSubmenu(); }
+        function () {
+            myself.popUpSubmenu();
+        }
     );
     world.animations.push(this.schedule);
 };
 
 MenuItemMorph.prototype.popUpSubmenu = function () {
     var menu = this.parentThatIsA(MenuMorph);
-    if (!(this.action instanceof MenuMorph)) {return; }
+    if (!(this.action instanceof MenuMorph)) {
+        return;
+    }
     this.action.drawNew();
     this.action.setPosition(this.topRight().subtract(new Point(0, 5)));
     this.action.addShadow(new Point(2, 2), 80);
     this.action.keepWithin(this.world());
-    if (this.action.items.length < 1 && !this.action.title) {return; }
+    if (this.action.items.length < 1 && !this.action.title) {
+        return;
+    }
     menu.add(this.action);
     menu.submenu = this.action;
     menu.submenu.world = menu.world; // keyboard control
@@ -9718,10 +9774,12 @@ FrameMorph.prototype.topMorphAt = function (point) {
     }
     for (i = this.children.length - 1; i >= 0; i -= 1) {
         result = this.children[i].topMorphAt(point);
-        if (result) {return result; }
+        if (result) {
+            return result;
+        }
     }
     return this.noticesTransparentClick ||
-        !this.isTransparentAt(point) ? this : null;
+    !this.isTransparentAt(point) ? this : null;
 };
 
 // FrameMorph scrolling support:
@@ -9906,7 +9964,7 @@ ScrollFrameMorph.prototype.adjustScrollBars = function () {
 
     this.changed();
     if (this.contents.width() > this.width() +
-            MorphicPreferences.scrollBarSize) {
+        MorphicPreferences.scrollBarSize) {
         this.hBar.show();
         if (this.hBar.width() !== hWidth) {
             this.hBar.setWidth(hWidth);
@@ -9929,7 +9987,7 @@ ScrollFrameMorph.prototype.adjustScrollBars = function () {
     }
 
     if (this.contents.height() > this.height() +
-            this.scrollBarSize) {
+        this.scrollBarSize) {
         this.vBar.show();
         if (this.vBar.height() !== vHeight) {
             this.vBar.setHeight(vHeight);
@@ -10042,12 +10100,12 @@ ScrollFrameMorph.prototype.mouseDownLeft = function (pos) {
     this.step = function () {
         var newPos;
         if (hand.mouseButton &&
-                (hand.children.length === 0) &&
-                (myself.bounds.containsPoint(hand.bounds.origin))) {
+            (hand.children.length === 0) &&
+            (myself.bounds.containsPoint(hand.bounds.origin))) {
 
             if (hand.grabPosition &&
                 (hand.grabPosition.distanceTo(hand.position()) <=
-                    MorphicPreferences.grabThreshold)) {
+                MorphicPreferences.grabThreshold)) {
                 // still within the grab threshold
                 return null;
             }
@@ -10069,7 +10127,7 @@ ScrollFrameMorph.prototype.mouseDownLeft = function (pos) {
                 };
             } else {
                 if ((Math.abs(deltaX) < 0.5) &&
-                        (Math.abs(deltaY) < 0.5)) {
+                    (Math.abs(deltaY) < 0.5)) {
                     myself.step = function () {
                         nop();
                     };
@@ -10104,8 +10162,8 @@ ScrollFrameMorph.prototype.startAutoScrolling = function () {
         pos = hand.bounds.origin;
         inner = myself.bounds.insetBy(inset);
         if ((myself.bounds.containsPoint(pos)) &&
-                (!(inner.containsPoint(pos))) &&
-                (hand.children.length > 0)) {
+            (!(inner.containsPoint(pos))) &&
+            (hand.children.length > 0)) {
             myself.autoScroll(pos);
         } else {
             myself.step = function () {
@@ -10227,26 +10285,26 @@ ListMorph.prototype.constructor = ListMorph;
 ListMorph.uber = ScrollFrameMorph.prototype;
 
 function ListMorph(elements, labelGetter, format, doubleClickAction) {
-/*
-    passing a format is optional. If the format parameter is specified
-    it has to be of the following pattern:
+    /*
+     passing a format is optional. If the format parameter is specified
+     it has to be of the following pattern:
 
-        [
-            [<color>, <single-argument predicate>],
-            ['bold', <single-argument predicate>],
-            ['italic', <single-argument predicate>],
-            ...
-        ]
+     [
+     [<color>, <single-argument predicate>],
+     ['bold', <single-argument predicate>],
+     ['italic', <single-argument predicate>],
+     ...
+     ]
 
-    multiple conditions can be passed in such a format list, the
-    last predicate to evaluate true when given the list element sets
-    the given format category (color, bold, italic).
-    If no condition is met, the default format (color black, non-bold,
-    non-italic) will be assigned.
+     multiple conditions can be passed in such a format list, the
+     last predicate to evaluate true when given the list element sets
+     the given format category (color, bold, italic).
+     If no condition is met, the default format (color black, non-bold,
+     non-italic) will be assigned.
 
-    An example of how to use fomats can be found in the InspectorMorph's
-    "markOwnProperties" mechanism.
-*/
+     An example of how to use fomats can be found in the InspectorMorph's
+     "markOwnProperties" mechanism.
+     */
     this.init(
         elements || [],
         labelGetter || function (element) {
@@ -10263,12 +10321,10 @@ function ListMorph(elements, labelGetter, format, doubleClickAction) {
     );
 }
 
-ListMorph.prototype.init = function (
-    elements,
-    labelGetter,
-    format,
-    doubleClickAction
-) {
+ListMorph.prototype.init = function (elements,
+                                     labelGetter,
+                                     format,
+                                     doubleClickAction) {
     ListMorph.uber.init.call(this);
 
     this.contents.acceptsDrops = false;
@@ -10333,7 +10389,9 @@ ListMorph.prototype.buildListContents = function () {
 };
 
 ListMorph.prototype.select = function (item, trigger) {
-    if (isNil(item)) {return; }
+    if (isNil(item)) {
+        return;
+    }
     this.selected = item;
     this.active = trigger;
     if (this.action) {
@@ -10362,7 +10420,9 @@ ListMorph.prototype.activeIndex = function () {
 
 ListMorph.prototype.activateIndex = function (idx) {
     var item = this.listContents.children[idx];
-    if (!item) {return; }
+    if (!item) {
+        return;
+    }
     item.image = item.pressImage;
     item.changed();
     item.trigger();
@@ -10376,15 +10436,13 @@ StringFieldMorph.prototype = new FrameMorph();
 StringFieldMorph.prototype.constructor = StringFieldMorph;
 StringFieldMorph.uber = FrameMorph.prototype;
 
-function StringFieldMorph(
-    defaultContents,
-    minWidth,
-    fontSize,
-    fontStyle,
-    bold,
-    italic,
-    isNumeric
-) {
+function StringFieldMorph(defaultContents,
+                          minWidth,
+                          fontSize,
+                          fontStyle,
+                          bold,
+                          italic,
+                          isNumeric) {
     this.init(
         defaultContents || '',
         minWidth || 100,
@@ -10396,15 +10454,13 @@ function StringFieldMorph(
     );
 }
 
-StringFieldMorph.prototype.init = function (
-    defaultContents,
-    minWidth,
-    fontSize,
-    fontStyle,
-    bold,
-    italic,
-    isNumeric
-) {
+StringFieldMorph.prototype.init = function (defaultContents,
+                                            minWidth,
+                                            fontSize,
+                                            fontStyle,
+                                            bold,
+                                            italic,
+                                            isNumeric) {
     this.defaultContents = defaultContents;
     this.minWidth = minWidth;
     this.fontSize = fontSize;
@@ -10528,11 +10584,11 @@ BouncerMorph.prototype.step = function () {
                 this.moveUp();
             }
             if (this.fullBounds().top() < this.parent.top() &&
-                    this.direction === 'up') {
+                this.direction === 'up') {
                 this.direction = 'down';
             }
             if (this.fullBounds().bottom() > this.parent.bottom() &&
-                    this.direction === 'down') {
+                this.direction === 'down') {
                 this.direction = 'up';
             }
         } else if (this.type === 'horizontal') {
@@ -10542,11 +10598,11 @@ BouncerMorph.prototype.step = function () {
                 this.moveLeft();
             }
             if (this.fullBounds().left() < this.parent.left() &&
-                    this.direction === 'left') {
+                this.direction === 'left') {
                 this.direction = 'right';
             }
             if (this.fullBounds().right() > this.parent.right() &&
-                    this.direction === 'right') {
+                this.direction === 'right') {
                 this.direction = 'left';
             }
         }
@@ -10616,14 +10672,14 @@ HandMorph.prototype.allMorphsAtPointer = function () {
 
 // HandMorph dragging and dropping:
 /*
-    drag 'n' drop events, method(arg) -> receiver:
+ drag 'n' drop events, method(arg) -> receiver:
 
-        prepareToBeGrabbed(handMorph) -> grabTarget
-        reactToGrabOf(grabbedMorph) -> oldParent
-        wantsDropOf(morphToDrop) ->  newParent
-        justDropped(handMorph) -> droppedMorph
-        reactToDropOf(droppedMorph, handMorph) -> newParent
-*/
+ prepareToBeGrabbed(handMorph) -> grabTarget
+ reactToGrabOf(grabbedMorph) -> oldParent
+ wantsDropOf(morphToDrop) ->  newParent
+ justDropped(handMorph) -> droppedMorph
+ reactToDropOf(droppedMorph, handMorph) -> newParent
+ */
 
 HandMorph.prototype.dropTargetFor = function (aMorph) {
     var target = this.morphAtPointer();
@@ -10679,20 +10735,20 @@ HandMorph.prototype.drop = function () {
 
 // HandMorph event dispatching:
 /*
-    mouse events:
+ mouse events:
 
-        mouseDownLeft
-        mouseDownRight
-        mouseClickLeft
-        mouseClickRight
-        mouseDoubleClick
-        mouseEnter
-        mouseLeave
-        mouseEnterDragging
-        mouseLeaveDragging
-        mouseMove
-        mouseScroll
-*/
+ mouseDownLeft
+ mouseDownRight
+ mouseClickLeft
+ mouseClickRight
+ mouseDoubleClick
+ mouseEnter
+ mouseLeave
+ mouseEnterDragging
+ mouseLeaveDragging
+ mouseMove
+ mouseScroll
+ */
 
 HandMorph.prototype.processMouseDown = function (event) {
     var morph, actualClick;
@@ -10798,7 +10854,7 @@ HandMorph.prototype.processMouseUp = function () {
                 context = morph;
                 contextMenu = context.contextMenu();
                 while ((!contextMenu) &&
-                        context.parent) {
+                context.parent) {
                     context = context.parent;
                     contextMenu = context.contextMenu();
                 }
@@ -10863,9 +10919,9 @@ HandMorph.prototype.processMouseMove = function (event) {
 
         // if a morph is marked for grabbing, just grab it
         if (this.mouseButton === 'left' &&
-                this.morphToGrab &&
-                (this.grabPosition.distanceTo(this.bounds.origin) >
-                    MorphicPreferences.grabThreshold)) {
+            this.morphToGrab &&
+            (this.grabPosition.distanceTo(this.bounds.origin) >
+            MorphicPreferences.grabThreshold)) {
             this.setPosition(this.grabPosition);
             if (this.morphToGrab.isDraggable) {
                 morph = this.morphToGrab;
@@ -10907,10 +10963,10 @@ HandMorph.prototype.processMouseMove = function (event) {
         // autoScrolling support:
         if (myself.children.length > 0) {
             if (newMorph instanceof ScrollFrameMorph &&
-                    newMorph.enableAutoScrolling &&
-                    newMorph.contents.allChildren().some(function (any) {
-                        return any.wantsDropOf(myself.children[0]);
-                    })
+                newMorph.enableAutoScrolling &&
+                newMorph.contents.allChildren().some(function (any) {
+                    return any.wantsDropOf(myself.children[0]);
+                })
             ) {
                 if (!newMorph.bounds.insetBy(
                         MorphicPreferences.scrollBarSize * 3
@@ -10935,8 +10991,8 @@ HandMorph.prototype.processMouseScroll = function (event) {
                     event,
                     'wheelDeltaY'
                 ) ?
-                        event.wheelDeltaY / 120 :
-                        event.wheelDelta / 120
+                    event.wheelDeltaY / 120 :
+                    event.wheelDelta / 120
             ),
             event.wheelDeltaX / 120 || 0
         );
@@ -10944,33 +11000,33 @@ HandMorph.prototype.processMouseScroll = function (event) {
 };
 
 /*
-    drop event:
+ drop event:
 
-        droppedImage
-        droppedSVG
-        droppedAudio
-        droppedText
-*/
+ droppedImage
+ droppedSVG
+ droppedAudio
+ droppedText
+ */
 
 HandMorph.prototype.processDrop = function (event) {
-/*
-    find out whether an external image or audio file was dropped
-    onto the world canvas, turn it into an offscreen canvas or audio
-    element and dispatch the
+    /*
+     find out whether an external image or audio file was dropped
+     onto the world canvas, turn it into an offscreen canvas or audio
+     element and dispatch the
 
-        droppedImage(canvas, name)
-        droppedSVG(image, name)
-        droppedAudio(audio, name)
+     droppedImage(canvas, name)
+     droppedSVG(image, name)
+     droppedAudio(audio, name)
 
-    events to interested Morphs at the mouse pointer
-*/
+     events to interested Morphs at the mouse pointer
+     */
     var files = event instanceof FileList ? event
-                : event.target.files || event.dataTransfer.files,
+            : event.target.files || event.dataTransfer.files,
         file,
         url = event.dataTransfer ?
-                event.dataTransfer.getData('URL') : null,
+            event.dataTransfer.getData('URL') : null,
         txt = event.dataTransfer ?
-                event.dataTransfer.getData('Text/HTML') : null,
+            event.dataTransfer.getData('Text/HTML') : null,
         suffix,
         src,
         target = this.morphAtPointer(),
@@ -11067,7 +11123,9 @@ HandMorph.prototype.processDrop = function (event) {
             idx,
             c,
             start = html.indexOf('<img src="');
-        if (start === -1) {return null; }
+        if (start === -1) {
+            return null;
+        }
         start += 10;
         for (idx = start; idx < html.length; idx += 1) {
             c = html[idx];
@@ -11083,7 +11141,7 @@ HandMorph.prototype.processDrop = function (event) {
         for (i = 0; i < files.length; i += 1) {
             file = files[i];
             if (file.type.indexOf("svg") !== -1
-                    && !MorphicPreferences.rasterizeSVGs) {
+                && !MorphicPreferences.rasterizeSVGs) {
                 readSVG(file);
             } else if (file.type.indexOf("image") === 0) {
                 readImage(file);
@@ -11146,23 +11204,25 @@ HandMorph.prototype.processDrop = function (event) {
             target.droppedImage(canvas);
         };
         src = parseImgURL(txt);
-        if (src) {img.src = src; }
+        if (src) {
+            img.src = src;
+        }
     }
 };
 
 // HandMorph tools
 
 HandMorph.prototype.destroyTemporaries = function () {
-/*
-    temporaries are just an array of morphs which will be deleted upon
-    the next mouse click, or whenever another temporary Morph decides
-    that it needs to remove them. The primary purpose of temporaries is
-    to display tools tips of speech bubble help.
-*/
+    /*
+     temporaries are just an array of morphs which will be deleted upon
+     the next mouse click, or whenever another temporary Morph decides
+     that it needs to remove them. The primary purpose of temporaries is
+     to display tools tips of speech bubble help.
+     */
     var myself = this;
     this.temporaries.forEach(function (morph) {
         if (!(morph.isClickable
-                && morph.bounds.containsPoint(myself.position()))) {
+            && morph.bounds.containsPoint(myself.position()))) {
             morph.destroy();
             myself.temporaries.splice(myself.temporaries.indexOf(morph), 1);
         }
@@ -11201,7 +11261,9 @@ WorldMorph.prototype.init = function (aCanvas, fillPage) {
 
     // additional properties:
     this.stamp = Date.now(); // reference in multi-world setups
-    while (this.stamp === Date.now()) {nop(); }
+    while (this.stamp === Date.now()) {
+        nop();
+    }
     this.stamp = Date.now();
 
     this.useFillPage = fillPage;
@@ -11249,7 +11311,9 @@ WorldMorph.prototype.updateBroken = function () {
 };
 
 WorldMorph.prototype.stepAnimations = function () {
-    this.animations.forEach(function (anim) {anim.step(); });
+    this.animations.forEach(function (anim) {
+        anim.step();
+    });
     this.animations = this.animations.filter(function (anim) {
         return anim.isActive;
     });
@@ -11264,7 +11328,9 @@ WorldMorph.prototype.condenseDamages = function () {
         src.forEach(function (rect) {
             hit = detect(
                 trgt,
-                function (each) {return each.isNearTo(rect, 20); }
+                function (each) {
+                    return each.isNearTo(rect, 20);
+                }
             );
             if (hit) {
                 hit.mergeWith(rect);
@@ -11326,29 +11392,29 @@ WorldMorph.prototype.fillPage = function () {
 // WorldMorph global pixel access:
 
 WorldMorph.prototype.getGlobalPixelColor = function (point) {
-/*
-    answer the color at the given point.
+    /*
+     answer the color at the given point.
 
-    Note: for some strange reason this method works fine if the page is
-    opened via HTTP, but *not*, if it is opened from a local uri
-    (e.g. from a directory), in which case it's always null.
+     Note: for some strange reason this method works fine if the page is
+     opened via HTTP, but *not*, if it is opened from a local uri
+     (e.g. from a directory), in which case it's always null.
 
-    This behavior is consistent throughout several browsers. I have no
-    clue what's behind this, apparently the imageData attribute of
-    canvas context only gets filled with meaningful data if transferred
-    via HTTP ???
+     This behavior is consistent throughout several browsers. I have no
+     clue what's behind this, apparently the imageData attribute of
+     canvas context only gets filled with meaningful data if transferred
+     via HTTP ???
 
-    This is somewhat of a showstopper for color detection in a planned
-    offline version of Snap.
+     This is somewhat of a showstopper for color detection in a planned
+     offline version of Snap.
 
-    The issue has also been discussed at: (join lines before pasting)
-    http://stackoverflow.com/questions/4069400/
-    canvas-getimagedata-doesnt-work-when-running-locally-on-windows-
-    security-excep
+     The issue has also been discussed at: (join lines before pasting)
+     http://stackoverflow.com/questions/4069400/
+     canvas-getimagedata-doesnt-work-when-running-locally-on-windows-
+     security-excep
 
-    The suggestion solution appears to work, since the settings are
-    applied globally.
-*/
+     The suggestion solution appears to work, since the settings are
+     applied globally.
+     */
     var dta = this.worldCanvas.getContext('2d').getImageData(
         point.x,
         point.y,
@@ -11368,7 +11434,7 @@ WorldMorph.prototype.initVirtualKeyboard = function () {
         this.virtualKeyboard = null;
     }
     if (!MorphicPreferences.isTouchDevice
-            || !MorphicPreferences.useVirtualKeyboard) {
+        || !MorphicPreferences.useVirtualKeyboard) {
         return;
     }
     this.virtualKeyboard = document.createElement("input");
@@ -11536,7 +11602,7 @@ WorldMorph.prototype.initEventListeners = function () {
                 event.preventDefault();
             }
             if ((event.ctrlKey && (!event.altKey) || event.metaKey) &&
-                    (event.keyCode !== 86)) { // allow pasting-in
+                (event.keyCode !== 86)) { // allow pasting-in
                 event.preventDefault();
             }
         },
@@ -11820,20 +11886,20 @@ WorldMorph.prototype.userCreateMorph = function () {
     menu.addItem('text', function () {
         newMorph = new TextMorph(
             "Ich wei\u00DF nicht, was soll es bedeuten, dass ich so " +
-                "traurig bin, ein M\u00E4rchen aus uralten Zeiten, das " +
-                "kommt mir nicht aus dem Sinn. Die Luft ist k\u00FChl " +
-                "und es dunkelt, und ruhig flie\u00DFt der Rhein; der " +
-                "Gipfel des Berges funkelt im Abendsonnenschein. " +
-                "Die sch\u00F6nste Jungfrau sitzet dort oben wunderbar, " +
-                "ihr gold'nes Geschmeide blitzet, sie k\u00E4mmt ihr " +
-                "goldenes Haar, sie k\u00E4mmt es mit goldenem Kamme, " +
-                "und singt ein Lied dabei; das hat eine wundersame, " +
-                "gewalt'ge Melodei. Den Schiffer im kleinen " +
-                "Schiffe, ergreift es mit wildem Weh; er schaut " +
-                "nicht die Felsenriffe, er schaut nur hinauf in " +
-                "die H\u00F6h'. Ich glaube, die Wellen verschlingen " +
-                "am Ende Schiffer und Kahn, und das hat mit ihrem " +
-                "Singen, die Loreley getan."
+            "traurig bin, ein M\u00E4rchen aus uralten Zeiten, das " +
+            "kommt mir nicht aus dem Sinn. Die Luft ist k\u00FChl " +
+            "und es dunkelt, und ruhig flie\u00DFt der Rhein; der " +
+            "Gipfel des Berges funkelt im Abendsonnenschein. " +
+            "Die sch\u00F6nste Jungfrau sitzet dort oben wunderbar, " +
+            "ihr gold'nes Geschmeide blitzet, sie k\u00E4mmt ihr " +
+            "goldenes Haar, sie k\u00E4mmt es mit goldenem Kamme, " +
+            "und singt ein Lied dabei; das hat eine wundersame, " +
+            "gewalt'ge Melodei. Den Schiffer im kleinen " +
+            "Schiffe, ergreift es mit wildem Weh; er schaut " +
+            "nicht die Felsenriffe, er schaut nur hinauf in " +
+            "die H\u00F6h'. Ich glaube, die Wellen verschlingen " +
+            "am Ende Schiffer und Kahn, und das hat mit ihrem " +
+            "Singen, die Loreley getan."
         );
         newMorph.isEditable = true;
         newMorph.maxWidth = 300;
@@ -11962,10 +12028,10 @@ WorldMorph.prototype.about = function () {
 
     this.inform(
         'morphic.js\n\n' +
-            'a lively Web GUI\ninspired by Squeak\n' +
-            morphicVersion +
-            '\n\nwritten by Jens M\u00F6nig\njens@moenig.org' +
-            versions
+        'a lively Web GUI\ninspired by Squeak\n' +
+        morphicVersion +
+        '\n\nwritten by Jens M\u00F6nig\njens@moenig.org' +
+        versions
     );
 };
 
@@ -11984,7 +12050,7 @@ WorldMorph.prototype.edit = function (aStringOrTextMorph) {
 
     this.initVirtualKeyboard();
     if (MorphicPreferences.isTouchDevice
-            && MorphicPreferences.useVirtualKeyboard) {
+        && MorphicPreferences.useVirtualKeyboard) {
         this.virtualKeyboard.style.top = this.cursor.top() + pos.y + "px";
         this.virtualKeyboard.style.left = this.cursor.left() + pos.x + "px";
         this.virtualKeyboard.focus();

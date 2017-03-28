@@ -1,78 +1,78 @@
 /*
 
-    widgets.js
+ widgets.js
 
-    additional GUI elements for morphic.js
+ additional GUI elements for morphic.js
 
-    written by Jens Mönig
-    jens@moenig.org
+ written by Jens Mönig
+ jens@moenig.org
 
-    Copyright (C) 2017 by Jens Mönig
+ Copyright (C) 2017 by Jens Mönig
 
-    This file is part of Snap!.
+ This file is part of Snap!.
 
-    Snap! is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of
-    the License, or (at your option) any later version.
+ Snap! is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of
+ the License, or (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
 
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-    prerequisites:
-    --------------
-    needs blocks.js and objects.js
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-    I. hierarchy
-    -------------
-    the following tree lists all constructors hierarchically,
-    indentation indicating inheritance. Refer to this list to get a
-    contextual overview:
-
-    Morph*
-        AlignmentMorph
-        DialogBoxMorph
-        InputFieldMorph
-    TriggerMorph*
-        PushButtonMorph
-            ToggleButtonMorph
-                TabMorph
-            ToggleMorph
-        ToggleElementMorph
-
-    * from Morphic.js
+ prerequisites:
+ --------------
+ needs blocks.js and objects.js
 
 
-    II. toc
-    -------
-    the following list shows the order in which all constructors are
-    defined. Use this list to locate code in this document:
+ I. hierarchy
+ -------------
+ the following tree lists all constructors hierarchically,
+ indentation indicating inheritance. Refer to this list to get a
+ contextual overview:
 
-    PushButtonMorph
-    ToggleButtonMorph
-    TabMorph
-    ToggleMorph
-    ToggleElementMorph
-    DialogBoxMorph
-    AlignmentMorph
-    InputFieldMorph
+ Morph*
+ AlignmentMorph
+ DialogBoxMorph
+ InputFieldMorph
+ TriggerMorph*
+ PushButtonMorph
+ ToggleButtonMorph
+ TabMorph
+ ToggleMorph
+ ToggleElementMorph
 
-*/
+ * from Morphic.js
+
+
+ II. toc
+ -------
+ the following list shows the order in which all constructors are
+ defined. Use this list to locate code in this document:
+
+ PushButtonMorph
+ ToggleButtonMorph
+ TabMorph
+ ToggleMorph
+ ToggleElementMorph
+ DialogBoxMorph
+ AlignmentMorph
+ InputFieldMorph
+
+ */
 
 // Global settings /////////////////////////////////////////////////////
 
 /*global TriggerMorph, modules, Color, Point, BoxMorph, radians,
-newCanvas, StringMorph, Morph, TextMorph, nop, detect, StringFieldMorph,
-HTMLCanvasElement, fontHeight, SymbolMorph, localize, SpeechBubbleMorph,
-ArrowMorph, MenuMorph, isString, isNil, SliderMorph, MorphicPreferences,
-ScrollFrameMorph*/
+ newCanvas, StringMorph, Morph, TextMorph, nop, detect, StringFieldMorph,
+ HTMLCanvasElement, fontHeight, SymbolMorph, localize, SpeechBubbleMorph,
+ ArrowMorph, MenuMorph, isString, isNil, SliderMorph, MorphicPreferences,
+ ScrollFrameMorph*/
 
 modules.widgets = '2017-January-03';
 
@@ -118,14 +118,12 @@ PushButtonMorph.prototype.padding = 3;
 
 // PushButtonMorph instance creation:
 
-function PushButtonMorph(
-    target,
-    action,
-    labelString,
-    environment,
-    hint,
-    template
-) {
+function PushButtonMorph(target,
+                         action,
+                         labelString,
+                         environment,
+                         hint,
+                         template) {
     this.init(
         target,
         action,
@@ -136,14 +134,12 @@ function PushButtonMorph(
     );
 }
 
-PushButtonMorph.prototype.init = function (
-    target,
-    action,
-    labelString,
-    environment,
-    hint,
-    template
-) {
+PushButtonMorph.prototype.init = function (target,
+                                           action,
+                                           labelString,
+                                           environment,
+                                           hint,
+                                           template) {
     // additional properties:
     this.is3D = false; // for "flat" design exceptions
     this.target = target || null;
@@ -174,8 +170,8 @@ PushButtonMorph.prototype.fixLayout = function () {
         this.setExtent(new Point(
             Math.max(this.label.width(), this.labelMinExtent.x) + padding,
             Math.max(this.label instanceof StringMorph ?
-                    this.label.rawHeight() :
-                        this.label.height(), this.labelMinExtent.y) + padding
+                this.label.rawHeight() :
+                this.label.height(), this.labelMinExtent.y) + padding
         ));
         this.label.setCenter(this.center());
     }
@@ -212,7 +208,9 @@ PushButtonMorph.prototype.drawOutline = function (context) {
     var outlineStyle,
         isFlat = MorphicPreferences.isFlat && !this.is3D;
 
-    if (!this.outline || isFlat) {return null; }
+    if (!this.outline || isFlat) {
+        return null;
+    }
     if (this.outlineGradient) {
         outlineStyle = context.createLinearGradient(
             0,
@@ -251,13 +249,13 @@ PushButtonMorph.prototype.drawBackground = function (context, color) {
     context.lineWidth = this.outline;
 };
 
-PushButtonMorph.prototype.drawEdges = function (
-    context,
-    color,
-    topColor,
-    bottomColor
-) {
-    if (MorphicPreferences.isFlat && !this.is3D) {return; }
+PushButtonMorph.prototype.drawEdges = function (context,
+                                                color,
+                                                topColor,
+                                                bottomColor) {
+    if (MorphicPreferences.isFlat && !this.is3D) {
+        return;
+    }
     var minInset = Math.max(this.corner, this.outline + this.edge),
         w = this.width(),
         h = this.height(),
@@ -469,10 +467,10 @@ PushButtonMorph.prototype.createLabel = function () {
 // ToggleButtonMorph ///////////////////////////////////////////////////////
 
 /*
-    I am a two-state PushButton. When my state is "true" I keep my "pressed"
-    background color. I can also be set to not auto-layout my bounds, in
-    which case my label will left-align.
-*/
+ I am a two-state PushButton. When my state is "true" I keep my "pressed"
+ background color. I can also be set to not auto-layout my bounds, in
+ which case my label will left-align.
+ */
 
 // ToggleButtonMorph inherits from PushButtonMorph:
 
@@ -486,18 +484,17 @@ ToggleButtonMorph.prototype.contrast = 30;
 
 // ToggleButtonMorph instance creation:
 
-function ToggleButtonMorph(
-    colors, // color overrides, <array>: [normal, highlight, pressed]
-    target,
-    action, // a toggle function
-    labelString,
-    query, // predicate/selector
-    environment,
-    hint,
-    template, // optional, for cached background images
-    minWidth, // <num> optional, if specified label will left-align
-    hasPreview, // <bool> show press color on left edge (e.g. category)
-    isPicture // treat label as picture, i.e. don't apply typography
+function ToggleButtonMorph(colors, // color overrides, <array>: [normal, highlight, pressed]
+                           target,
+                           action, // a toggle function
+                           labelString,
+                           query, // predicate/selector
+                           environment,
+                           hint,
+                           template, // optional, for cached background images
+                           minWidth, // <num> optional, if specified label will left-align
+                           hasPreview, // <bool> show press color on left edge (e.g. category)
+                           isPicture // treat label as picture, i.e. don't apply typography
 ) {
     this.init(
         colors,
@@ -514,22 +511,22 @@ function ToggleButtonMorph(
     );
 }
 
-ToggleButtonMorph.prototype.init = function (
-    colors,
-    target,
-    action,
-    labelString,
-    query,
-    environment,
-    hint,
-    template,
-    minWidth,
-    hasPreview,
-    isPicture
-) {
+ToggleButtonMorph.prototype.init = function (colors,
+                                             target,
+                                             action,
+                                             labelString,
+                                             query,
+                                             environment,
+                                             hint,
+                                             template,
+                                             minWidth,
+                                             hasPreview,
+                                             isPicture) {
     // additional properties:
     this.state = false;
-    this.query = query || function () {return true; };
+    this.query = query || function () {
+            return true;
+        };
     this.minWidth = minWidth || null;
     this.hasPreview = hasPreview || false;
     this.isPicture = isPicture || false;
@@ -606,15 +603,15 @@ ToggleButtonMorph.prototype.trigger = function () {
 };
 
 ToggleButtonMorph.prototype.refresh = function () {
-/*
-    if query is a function:
-    execute the query with target as environment (can be null)
-    for lambdafied (inline) actions
+    /*
+     if query is a function:
+     execute the query with target as environment (can be null)
+     for lambdafied (inline) actions
 
-    else if query is a String:
-    treat it as function property of target and execute it
-    for selector-like queries
-*/
+     else if query is a String:
+     treat it as function property of target and execute it
+     for selector-like queries
+     */
     if (typeof this.query === 'function') {
         this.state = this.query.call(this.target);
     } else { // assume it's a String
@@ -644,11 +641,11 @@ ToggleButtonMorph.prototype.fixLayout = function () {
             padding = this.padding * 2 + this.outline * 2 + this.edge * 2;
         this.setExtent(new Point(
             (this.minWidth ?
-                    Math.max(this.minWidth, lw) + padding
-                    : lw + padding),
+                Math.max(this.minWidth, lw) + padding
+                : lw + padding),
             Math.max(this.label instanceof StringMorph ?
-                    this.label.rawHeight() :
-                        this.label.height(), this.labelMinExtent.y) + padding
+                this.label.rawHeight() :
+                this.label.height(), this.labelMinExtent.y) + padding
         ));
         this.label.setCenter(this.center());
         if (this.trueStateLabel) {
@@ -657,10 +654,10 @@ ToggleButtonMorph.prototype.fixLayout = function () {
         if (this.minWidth) { // left-align along my corner
             this.label.setLeft(
                 this.left()
-                    + this.outline
-                    + this.edge
-                    + this.corner
-                    + this.padding
+                + this.outline
+                + this.edge
+                + this.corner
+                + this.padding
             );
         }
     }
@@ -669,13 +666,13 @@ ToggleButtonMorph.prototype.fixLayout = function () {
 // ToggleButtonMorph drawing
 
 ToggleButtonMorph.prototype.createBackgrounds = function () {
-/*
-    basically the same as inherited from PushButtonMorph, except for
-    not inverting the pressImage 3D-ish border (because it stays that way),
-    and optionally coloring the left edge in the press-color, previewing
-    the selection color (e.g. in the case of Scratch palette-category
-    selector. the latter is done in the drawEdges() method.
-*/
+    /*
+     basically the same as inherited from PushButtonMorph, except for
+     not inverting the pressImage 3D-ish border (because it stays that way),
+     and optionally coloring the left edge in the press-color, previewing
+     the selection color (e.g. in the case of Scratch palette-category
+     selector. the latter is done in the drawEdges() method.
+     */
     var context,
         ext = this.extent();
 
@@ -725,12 +722,10 @@ ToggleButtonMorph.prototype.createBackgrounds = function () {
     this.image = this.normalImage;
 };
 
-ToggleButtonMorph.prototype.drawEdges = function (
-    context,
-    color,
-    topColor,
-    bottomColor
-) {
+ToggleButtonMorph.prototype.drawEdges = function (context,
+                                                  color,
+                                                  topColor,
+                                                  bottomColor) {
     var gradient;
 
     ToggleButtonMorph.uber.drawEdges.call(
@@ -812,13 +807,13 @@ ToggleButtonMorph.prototype.createLabel = function () {
             this.trueStateLabel = this.labelString[1].fullCopy();
             if (!this.isPicture) {
                 this.label.shadowOffset = shading ?
-                        this.labelShadowOffset : none;
+                    this.labelShadowOffset : none;
                 this.label.shadowColor = this.labelShadowColor;
                 this.label.color = this.labelColor;
                 this.label.drawNew();
 
                 this.trueStateLabel.shadowOffset = shading ?
-                        this.labelShadowOffset : none;
+                    this.labelShadowOffset : none;
                 this.trueStateLabel.shadowColor = this.labelShadowColor;
                 this.trueStateLabel.color = this.labelColor;
                 this.trueStateLabel.drawNew();
@@ -855,7 +850,7 @@ ToggleButtonMorph.prototype.createLabel = function () {
             this.label = this.labelString.fullCopy();
             if (!this.isPicture) {
                 this.label.shadowOffset = shading ?
-                        this.labelShadowOffset : none;
+                    this.labelShadowOffset : none;
                 this.label.shadowColor = this.labelShadowColor;
                 this.label.color = this.labelColor;
                 this.label.drawNew();
@@ -885,10 +880,10 @@ ToggleButtonMorph.prototype.createLabel = function () {
 // ToggleButtonMorph hiding and showing:
 
 /*
-    override the inherited behavior to recursively hide/show all
-    children, so that my instances get restored correctly when
-    hiding/showing my parent.
-*/
+ override the inherited behavior to recursively hide/show all
+ children, so that my instances get restored correctly when
+ hiding/showing my parent.
+ */
 
 ToggleButtonMorph.prototype.hide = function () {
     this.isVisible = false;
@@ -910,15 +905,13 @@ TabMorph.uber = ToggleButtonMorph.prototype;
 
 // TabMorph instance creation:
 
-function TabMorph(
-    colors, // color overrides, <array>: [normal, highlight, pressed]
-    target,
-    action, // a toggle function
-    labelString,
-    query, // predicate/selector
-    environment,
-    hint
-) {
+function TabMorph(colors, // color overrides, <array>: [normal, highlight, pressed]
+                  target,
+                  action, // a toggle function
+                  labelString,
+                  query, // predicate/selector
+                  environment,
+                  hint) {
     this.init(
         colors,
         target,
@@ -936,13 +929,13 @@ TabMorph.prototype.fixLayout = function () {
     if (this.label !== null) {
         this.setExtent(new Point(
             this.label.width()
-                + this.padding * 2
-                + this.corner * 3
-                + this.edge * 2,
+            + this.padding * 2
+            + this.corner * 3
+            + this.edge * 2,
             (this.label instanceof StringMorph ?
-                        this.label.rawHeight() : this.label.height())
-                + this.padding * 2
-                + this.edge
+                this.label.rawHeight() : this.label.height())
+            + this.padding * 2
+            + this.edge
         ));
         this.label.setCenter(this.center());
     }
@@ -980,13 +973,13 @@ TabMorph.prototype.drawOutline = function () {
     nop();
 };
 
-TabMorph.prototype.drawEdges = function (
-    context,
-    color,
-    topColor,
-    bottomColor
-) {
-    if (MorphicPreferences.isFlat && !this.is3D) {return; }
+TabMorph.prototype.drawEdges = function (context,
+                                         color,
+                                         topColor,
+                                         bottomColor) {
+    if (MorphicPreferences.isFlat && !this.is3D) {
+        return;
+    }
 
     var w = this.width(),
         h = this.height(),
@@ -1016,13 +1009,13 @@ TabMorph.prototype.drawEdges = function (
 // ToggleMorph ///////////////////////////////////////////////////////
 
 /*
-    I am a PushButton which toggles a check mark ( becoming check box)
-    or a bullet (becoming a radio button). I can have both or either an
-    additional label and an additional pictogram, whereas the pictogram
-    can be either an instance of (any) Morph, in which case the pictogram
-    will be an interactive toggle itself or a Canvas, in which case it
-    is just going to be a picture.
-*/
+ I am a PushButton which toggles a check mark ( becoming check box)
+ or a bullet (becoming a radio button). I can have both or either an
+ additional label and an additional pictogram, whereas the pictogram
+ can be either an instance of (any) Morph, in which case the pictogram
+ will be an interactive toggle itself or a Canvas, in which case it
+ is just going to be a picture.
+ */
 
 // ToggleMorph inherits from PushButtonMorph:
 
@@ -1032,17 +1025,16 @@ ToggleMorph.uber = PushButtonMorph.prototype;
 
 // ToggleMorph instance creation:
 
-function ToggleMorph(
-    style, // 'checkbox' or 'radiobutton'
-    target,
-    action, // a toggle function
-    labelString,
-    query, // predicate/selector
-    environment,
-    hint,
-    template,
-    element, // optional Morph or Canvas to display
-    builder // method which constructs the element (only for Morphs)
+function ToggleMorph(style, // 'checkbox' or 'radiobutton'
+                     target,
+                     action, // a toggle function
+                     labelString,
+                     query, // predicate/selector
+                     environment,
+                     hint,
+                     template,
+                     element, // optional Morph or Canvas to display
+                     builder // method which constructs the element (only for Morphs)
 ) {
     this.init(
         style,
@@ -1058,25 +1050,25 @@ function ToggleMorph(
     );
 }
 
-ToggleMorph.prototype.init = function (
-    style,
-    target,
-    action,
-    labelString,
-    query,
-    environment,
-    hint,
-    template,
-    element,
-    builder
-) {
+ToggleMorph.prototype.init = function (style,
+                                       target,
+                                       action,
+                                       labelString,
+                                       query,
+                                       environment,
+                                       hint,
+                                       template,
+                                       element,
+                                       builder) {
     // additional properties:
     this.padding = 1;
     style = style || 'checkbox';
     this.corner = (style === 'checkbox' ?
-            0 : fontHeight(this.fontSize) / 2 + this.outline + this.padding);
+        0 : fontHeight(this.fontSize) / 2 + this.outline + this.padding);
     this.state = false;
-    this.query = query || function () {return true; };
+    this.query = query || function () {
+            return true;
+        };
     this.tick = null;
     this.captionString = labelString || null;
     this.labelAlignment = 'right';
@@ -1130,10 +1122,10 @@ ToggleMorph.prototype.fixLayout = function () {
         if (this.labelAlignment === 'right') {
             this.label.setPosition(new Point(
                 this.toggleElement ?
-                        this.toggleElement instanceof ToggleElementMorph ?
-                                this.toggleElement.right()
-                                : this.toggleElement.right() + padding
-                        : this.right() + padding,
+                    this.toggleElement instanceof ToggleElementMorph ?
+                        this.toggleElement.right()
+                        : this.toggleElement.right() + padding
+                    : this.right() + padding,
                 y
             ));
         } else {
@@ -1206,14 +1198,14 @@ ToggleMorph.prototype.trigger = function () {
 
 ToggleMorph.prototype.refresh = function () {
     /*
-    if query is a function:
-    execute the query with target as environment (can be null)
-    for lambdafied (inline) actions
+     if query is a function:
+     execute the query with target as environment (can be null)
+     for lambdafied (inline) actions
 
-    else if query is a String:
-    treat it as function property of target and execute it
-    for selector-like queries
-    */
+     else if query is a String:
+     treat it as function property of target and execute it
+     for selector-like queries
+     */
     if (typeof this.query === 'function') {
         this.state = this.query.call(this.target);
     } else { // assume it's a String
@@ -1255,10 +1247,10 @@ ToggleMorph.prototype.mouseLeave = function () {
 // ToggleMorph hiding and showing:
 
 /*
-    override the inherited behavior to recursively hide/show all
-    children, so that my instances get restored correctly when
-    hiding/showing my parent.
-*/
+ override the inherited behavior to recursively hide/show all
+ children, so that my instances get restored correctly when
+ hiding/showing my parent.
+ */
 
 ToggleMorph.prototype.hide = ToggleButtonMorph.prototype.hide;
 
@@ -1266,11 +1258,11 @@ ToggleMorph.prototype.show = ToggleButtonMorph.prototype.show;
 
 // ToggleElementMorph /////////////////////////////////////////////////////
 /*
-    I am a picture of a Morph ("element") which acts as a toggle button.
-    I am different from ToggleButton in that I neither create a label nor
-    draw button outlines. Instead I display my element morph in specified
-    contrasts of a given color, symbolizing whether it is selected or not
-*/
+ I am a picture of a Morph ("element") which acts as a toggle button.
+ I am different from ToggleButton in that I neither create a label nor
+ draw button outlines. Instead I display my element morph in specified
+ contrasts of a given color, symbolizing whether it is selected or not
+ */
 
 // ToggleElementMorph inherits from TriggerMorph:
 
@@ -1288,16 +1280,14 @@ ToggleElementMorph.prototype.inactiveColor = new Color(180, 180, 180);
 
 // ToggleElementMorph instance creation:
 
-function ToggleElementMorph(
-    target,
-    action,
-    element,
-    query,
-    environment,
-    hint,
-    builder,
-    labelString
-) {
+function ToggleElementMorph(target,
+                            action,
+                            element,
+                            query,
+                            environment,
+                            hint,
+                            builder,
+                            labelString) {
     this.init(
         target,
         action,
@@ -1310,21 +1300,21 @@ function ToggleElementMorph(
     );
 }
 
-ToggleElementMorph.prototype.init = function (
-    target,
-    action,
-    element, // mandatory
-    query,
-    environment,
-    hint,
-    builder, // optional function name that rebuilds the element
-    labelString
-) {
+ToggleElementMorph.prototype.init = function (target,
+                                              action,
+                                              element, // mandatory
+                                              query,
+                                              environment,
+                                              hint,
+                                              builder, // optional function name that rebuilds the element
+                                              labelString) {
     // additional properties:
     this.target = target || null;
     this.action = action || null;
     this.element = element;
-    this.query = query || function () {return true; };
+    this.query = query || function () {
+            return true;
+        };
     this.environment = environment || null;
     this.hint = hint || null;
     this.builder = builder || 'nop';
@@ -1434,13 +1424,13 @@ ToggleElementMorph.prototype.mouseClickLeft
 // DialogBoxMorph /////////////////////////////////////////////////////
 
 /*
-    I am a DialogBox frame.
+ I am a DialogBox frame.
 
-    Note:
-    -----
-    my key property keeps track of my purpose to prevent multiple instances
-    on the same or similar objects
-*/
+ Note:
+ -----
+ my key property keeps track of my purpose to prevent multiple instances
+ on the same or similar objects
+ */
 
 // DialogBoxMorph inherits from Morph:
 
@@ -1509,12 +1499,10 @@ DialogBoxMorph.prototype.init = function (target, action, environment) {
 };
 
 // DialogBoxMorph ops
-DialogBoxMorph.prototype.inform = function (
-    title,
-    textString,
-    world,
-    pic
-) {
+DialogBoxMorph.prototype.inform = function (title,
+                                            textString,
+                                            world,
+                                            pic) {
     var txt = new TextMorph(
         textString,
         this.fontSize,
@@ -1534,7 +1522,9 @@ DialogBoxMorph.prototype.inform = function (
 
     this.labelString = title;
     this.createLabel();
-    if (pic) {this.setPicture(pic); }
+    if (pic) {
+        this.setPicture(pic);
+    }
     if (textString) {
         this.addBody(txt);
     }
@@ -1544,12 +1534,10 @@ DialogBoxMorph.prototype.inform = function (
     this.popUp(world);
 };
 
-DialogBoxMorph.prototype.askYesNo = function (
-    title,
-    textString,
-    world,
-    pic
-) {
+DialogBoxMorph.prototype.askYesNo = function (title,
+                                              textString,
+                                              world,
+                                              pic) {
     var txt = new TextMorph(
         textString,
         this.fontSize,
@@ -1569,7 +1557,9 @@ DialogBoxMorph.prototype.askYesNo = function (
 
     this.labelString = title;
     this.createLabel();
-    if (pic) {this.setPicture(pic); }
+    if (pic) {
+        this.setPicture(pic);
+    }
     this.addBody(txt);
     this.addButton('ok', 'Yes');
     this.addButton('cancel', 'No');
@@ -1579,17 +1569,16 @@ DialogBoxMorph.prototype.askYesNo = function (
     this.popUp(world);
 };
 
-DialogBoxMorph.prototype.prompt = function (
-    title,
-    defaultString,
-    world,
-    pic,
-    choices, // optional dictionary for drop-down of choices
-    isReadOnly, // optional when using choices
-    isNumeric, // optional
-    sliderMin, // optional for numeric sliders
-    sliderMax, // optional for numeric sliders
-    sliderAction // optional single-arg function for numeric slider
+DialogBoxMorph.prototype.prompt = function (title,
+                                            defaultString,
+                                            world,
+                                            pic,
+                                            choices, // optional dictionary for drop-down of choices
+                                            isReadOnly, // optional when using choices
+                                            isNumeric, // optional
+                                            sliderMin, // optional for numeric sliders
+                                            sliderMax, // optional for numeric sliders
+                                            sliderAction // optional single-arg function for numeric slider
 ) {
     var sld,
         head,
@@ -1636,7 +1625,9 @@ DialogBoxMorph.prototype.prompt = function (
             head.fixLayout();
         }
     } else {
-        if (pic) {this.setPicture(pic); }
+        if (pic) {
+            this.setPicture(pic);
+        }
     }
 
     this.reactToChoice = function (inp) {
@@ -1680,13 +1671,11 @@ DialogBoxMorph.prototype.prompt = function (
     this.popUp(world);
 };
 
-DialogBoxMorph.prototype.promptCode = function (
-    title,
-    defaultString,
-    world,
-    pic,
-    instructions
-) {
+DialogBoxMorph.prototype.promptCode = function (title,
+                                                defaultString,
+                                                world,
+                                                pic,
+                                                instructions) {
     var frame = new ScrollFrameMorph(),
         text = new TextMorph(defaultString || ''),
         bdy = new AlignmentMorph('column', this.padding),
@@ -1735,7 +1724,9 @@ DialogBoxMorph.prototype.promptCode = function (
     frame.addContents(text);
     text.drawNew();
 
-    if (pic) {this.setPicture(pic); }
+    if (pic) {
+        this.setPicture(pic);
+    }
 
     this.labelString = title;
     this.createLabel();
@@ -1764,16 +1755,14 @@ DialogBoxMorph.prototype.promptCode = function (
     text.edit();
 };
 
-DialogBoxMorph.prototype.promptVector = function (
-    title,
-    point,
-    deflt,
-    xLabel,
-    yLabel,
-    world,
-    pic,
-    msg
-) {
+DialogBoxMorph.prototype.promptVector = function (title,
+                                                  point,
+                                                  deflt,
+                                                  xLabel,
+                                                  yLabel,
+                                                  world,
+                                                  pic,
+                                                  msg) {
     var vec = new AlignmentMorph('row', 4),
         xInp = new InputFieldMorph(point.x.toString(), true),
         yInp = new InputFieldMorph(point.y.toString(), true),
@@ -1827,7 +1816,9 @@ DialogBoxMorph.prototype.promptVector = function (
 
     this.labelString = title;
     this.createLabel();
-    if (pic) {this.setPicture(pic); }
+    if (pic) {
+        this.setPicture(pic);
+    }
 
     this.addBody(bdy);
 
@@ -1847,7 +1838,6 @@ DialogBoxMorph.prototype.promptVector = function (
                 yInp.setContents(deflt.y.toString());
             },
             'Default'
-
         );
     }
 
@@ -1871,18 +1861,16 @@ DialogBoxMorph.prototype.promptVector = function (
     this.popUp(world);
 };
 
-DialogBoxMorph.prototype.promptCredentials = function (
-    title,
-    purpose,
-    tosURL,
-    tosLabel,
-    prvURL,
-    prvLabel,
-    checkBoxLabel,
-    world,
-    pic,
-    msg
-) {
+DialogBoxMorph.prototype.promptCredentials = function (title,
+                                                       purpose,
+                                                       tosURL,
+                                                       tosLabel,
+                                                       prvURL,
+                                                       prvLabel,
+                                                       checkBoxLabel,
+                                                       world,
+                                                       pic,
+                                                       msg) {
     var usr = new InputFieldMorph(),
         bmn,
         byr,
@@ -1977,18 +1965,18 @@ DialogBoxMorph.prototype.promptCredentials = function (
         null, // text
         false, // numeric?
         {
-            'January' : ['January'],
-            'February' : ['February'],
-            'March' : ['March'],
-            'April' : ['April'],
-            'May' : ['May'],
-            'June' : ['June'],
-            'July' : ['July'],
-            'August' : ['August'],
-            'September' : ['September'],
-            'October' : ['October'],
-            'November' : ['November'],
-            'December' : ['December']
+            'January': ['January'],
+            'February': ['February'],
+            'March': ['March'],
+            'April': ['April'],
+            'May': ['May'],
+            'June': ['June'],
+            'July': ['July'],
+            'August': ['August'],
+            'September': ['September'],
+            'October': ['October'],
+            'November': ['November'],
+            'December': ['December']
         },
         true // read-only
     );
@@ -2083,9 +2071,13 @@ DialogBoxMorph.prototype.promptCredentials = function (
         chk = new ToggleMorph(
             'checkbox',
             this,
-            function () {agree = !agree; }, // action,
+            function () {
+                agree = !agree;
+            }, // action,
             checkBoxLabel,
-            function () {return agree; } //query
+            function () {
+                return agree;
+            } //query
         );
         chk.edge = this.buttonEdge / 2;
         chk.outline = this.buttonOutline / 2;
@@ -2106,7 +2098,9 @@ DialogBoxMorph.prototype.promptCredentials = function (
 
     this.labelString = title;
     this.createLabel();
-    if (pic) {this.setPicture(pic); }
+    if (pic) {
+        this.setPicture(pic);
+    }
 
     this.addBody(bdy);
 
@@ -2172,7 +2166,7 @@ DialogBoxMorph.prototype.promptCredentials = function (
                 return false;
             }
             if (em.indexOf(' ') > -1 || em.indexOf('@') === -1
-                    || em.indexOf('.') === -1) {
+                || em.indexOf('.') === -1) {
                 indicate(eml, 'please provide a valid\nemail address');
                 return false;
             }
@@ -2224,8 +2218,8 @@ DialogBoxMorph.prototype.promptCredentials = function (
         if (purpose === 'signup') {
             emlLabel.changed();
             emlLabel.text = age() <= 13 ?
-                    'E-mail address of parent or guardian:'
-                        : 'E-mail address:';
+                'E-mail address of parent or guardian:'
+                : 'E-mail address:';
             emlLabel.text = localize(emlLabel.text);
             emlLabel.drawNew();
             emlLabel.changed();
@@ -2243,23 +2237,23 @@ DialogBoxMorph.prototype.promptCredentials = function (
 
 DialogBoxMorph.prototype.accept = function () {
     /*
-    if target is a function, use it as callback:
-    execute target as callback function with action as argument
-    in the environment as optionally specified.
-    Note: if action is also a function, instead of becoming
-    the argument itself it will be called to answer the argument.
-    for selections, Yes/No Choices etc:
+     if target is a function, use it as callback:
+     execute target as callback function with action as argument
+     in the environment as optionally specified.
+     Note: if action is also a function, instead of becoming
+     the argument itself it will be called to answer the argument.
+     for selections, Yes/No Choices etc:
 
-    else (if target is not a function):
+     else (if target is not a function):
 
-        if action is a function:
-        execute the action with target as environment (can be null)
-        for lambdafied (inline) actions
+     if action is a function:
+     execute the action with target as environment (can be null)
+     for lambdafied (inline) actions
 
-        else if action is a String:
-        treat it as function property of target and execute it
-        for selector-like actions
-    */
+     else if action is a String:
+     treat it as function property of target and execute it
+     for selector-like actions
+     */
     if (this.action) {
         if (typeof this.target === 'function') {
             if (typeof this.action === 'function') {
@@ -2447,8 +2441,12 @@ DialogBoxMorph.prototype.addBody = function (aMorph) {
 
 // DialogBoxMorph layout
 
-DialogBoxMorph.prototype.addShadow = function () {nop(); };
-DialogBoxMorph.prototype.removeShadow = function () {nop(); };
+DialogBoxMorph.prototype.addShadow = function () {
+    nop();
+};
+DialogBoxMorph.prototype.removeShadow = function () {
+    nop();
+};
 
 DialogBoxMorph.prototype.fixLayout = function () {
     var th = fontHeight(this.titleFontSize) + this.titlePadding * 2, w;
@@ -2461,8 +2459,8 @@ DialogBoxMorph.prototype.fixLayout = function () {
         this.silentSetWidth(this.head.width() + this.padding * 2);
         this.silentSetHeight(
             this.head.height()
-                + this.padding * 2
-                + th
+            + this.padding * 2
+            + th
         );
     }
 
@@ -2478,17 +2476,17 @@ DialogBoxMorph.prototype.fixLayout = function () {
             ));
             this.silentSetHeight(
                 this.height()
-                    + this.body.height()
-                    + this.padding
+                + this.body.height()
+                + this.padding
             );
             w = this.width();
             this.head.setLeft(
                 this.left()
-                    + Math.round((w - this.head.width()) / 2)
+                + Math.round((w - this.head.width()) / 2)
             );
             this.body.setLeft(
                 this.left()
-                    + Math.round((w - this.body.width()) / 2)
+                + Math.round((w - this.body.width()) / 2)
             );
         } else {
             this.body.setPosition(this.position().add(new Point(
@@ -2498,8 +2496,8 @@ DialogBoxMorph.prototype.fixLayout = function () {
             this.silentSetWidth(this.body.width() + this.padding * 2);
             this.silentSetHeight(
                 this.body.height()
-                    + this.padding * 2
-                    + th
+                + this.padding * 2
+                + th
             );
         }
     }
@@ -2513,13 +2511,13 @@ DialogBoxMorph.prototype.fixLayout = function () {
         this.buttons.fixLayout();
         this.silentSetHeight(
             this.height()
-                    + this.buttons.height()
-                    + this.padding
+            + this.buttons.height()
+            + this.padding
         );
         this.silentSetWidth(Math.max(
-                this.width(),
+            this.width(),
                 this.buttons.width()
-                        + (2 * this.padding)
+                + (2 * this.padding)
             )
         );
         this.buttons.setCenter(this.center());
@@ -2530,9 +2528,9 @@ DialogBoxMorph.prototype.fixLayout = function () {
 // DialogBoxMorph shadow
 
 /*
-    only take the 'plain' image, so the box rounding doesn't become
-    conflicted by the scrolling scripts pane
-*/
+ only take the 'plain' image, so the box rounding doesn't become
+ conflicted by the scrolling scripts pane
+ */
 
 DialogBoxMorph.prototype.shadowImage = function (off, color) {
     // fallback for Windows Chrome-Shadow bug
@@ -2591,19 +2589,21 @@ DialogBoxMorph.prototype.shadowImageBlurred = function (off, color) {
 
 // DialogBoxMorph keyboard events
 
-DialogBoxMorph.prototype.processKeyPress = function () {nop(); };
+DialogBoxMorph.prototype.processKeyPress = function () {
+    nop();
+};
 
 DialogBoxMorph.prototype.processKeyDown = function (event) {
     // this.inspectKeyEvent(event);
     switch (event.keyCode) {
-    case 13:
-        this.ok();
-        break;
-    case 27:
-        this.cancel();
-        break;
-    default:
-        nop();
+        case 13:
+            this.ok();
+            break;
+        case 27:
+            this.cancel();
+            break;
+        default:
+            nop();
         // this.inspectKeyEvent(event);
     }
 };
@@ -2930,8 +2930,8 @@ AlignmentMorph.prototype.fixLayout = function () {
                     c.setPosition(
                         lfb.bottomLeft().add(new Point(
                             myself.alignment === 'center' ?
-                                    (lfb.width() - cfb.width()) / 2
-                                            : 0,
+                                (lfb.width() - cfb.width()) / 2
+                                : 0,
                             myself.padding
                         ))
                     );
@@ -2968,12 +2968,10 @@ function InputFieldMorph(text, isNumeric, choiceDict, isReadOnly) {
     this.init(text, isNumeric, choiceDict, isReadOnly);
 }
 
-InputFieldMorph.prototype.init = function (
-    text,
-    isNumeric,
-    choiceDict,
-    isReadOnly
-) {
+InputFieldMorph.prototype.init = function (text,
+                                           isNumeric,
+                                           choiceDict,
+                                           isReadOnly) {
     var contents = new StringFieldMorph(text || ''),
         arrow = new ArrowMorph(
             'down',
@@ -3113,7 +3111,9 @@ InputFieldMorph.prototype.fixLayout = function () {
     var contents = this.contents(),
         arrow = this.arrow();
 
-    if (!contents) {return null; }
+    if (!contents) {
+        return null;
+    }
     contents.isNumeric = this.isNumeric;
     contents.isEditable = (!this.isReadOnly);
     if (this.choices) {
@@ -3125,19 +3125,19 @@ InputFieldMorph.prototype.fixLayout = function () {
     }
     this.silentSetHeight(
         contents.height()
-            + this.edge * 2
-            + this.typeInPadding * 2
+        + this.edge * 2
+        + this.typeInPadding * 2
     );
     this.silentSetWidth(Math.max(
         contents.minWidth
-            + this.edge * 2
-            + this.typeInPadding * 2,
+        + this.edge * 2
+        + this.typeInPadding * 2,
         this.width()
     ));
 
     contents.setWidth(
         this.width() - this.edge - this.typeInPadding -
-            (this.choices ? arrow.width() + this.typeInPadding : 0)
+        (this.choices ? arrow.width() + this.typeInPadding : 0)
     );
 
     contents.silentSetPosition(new Point(
@@ -3167,11 +3167,11 @@ InputFieldMorph.prototype.mouseClickLeft = function (pos) {
 // InputFieldMorph retrieving:
 
 InputFieldMorph.prototype.getValue = function () {
-/*
-    answer my content's text string. If I am numerical convert that
-    string to a number. If the conversion fails answer the string
-    otherwise the numerical value.
-*/
+    /*
+     answer my content's text string. If I am numerical convert that
+     string to a number. If the conversion fails answer the string
+     otherwise the numerical value.
+     */
     var num,
         contents = this.contents();
     if (this.isNumeric) {
@@ -3228,7 +3228,9 @@ InputFieldMorph.prototype.drawRectBorder = function (context) {
     var shift = this.edge * 0.5,
         gradient;
 
-    if (MorphicPreferences.isFlat && !this.is3D) {return; }
+    if (MorphicPreferences.isFlat && !this.is3D) {
+        return;
+    }
 
     context.lineWidth = this.edge;
     context.lineJoin = 'round';

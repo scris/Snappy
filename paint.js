@@ -1,75 +1,75 @@
 /*
-    paint.js
+ paint.js
 
-    a paint editor for Snap!
-    inspired by the Scratch paint editor.
+ a paint editor for Snap!
+ inspired by the Scratch paint editor.
 
-    written by Kartik Chandra
-    Copyright (C) 2016 by Kartik Chandra
+ written by Kartik Chandra
+ Copyright (C) 2016 by Kartik Chandra
 
-    This file is part of Snap!.
+ This file is part of Snap!.
 
-    Snap! is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of
-    the License, or (at your option) any later version.
+ Snap! is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of
+ the License, or (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
 
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-    toc
-    ---
-    the following list shows the order in which all constructors are
-    defined. Use this list to locate code in this document:
-
-        PaintEditorMorph
-        PaintColorPickerMorph
-        PaintCanvasMorph
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-    credits
-    -------
-    Nathan Dinsmore contributed a fully working prototype,
-    Nathan's brilliant flood-fill tool has been more or less
-    directly imported into this paint implementation.
+ toc
+ ---
+ the following list shows the order in which all constructors are
+ defined. Use this list to locate code in this document:
 
-    Jens Mönig has contributed icons and bugfixes and says he has probably
-    introduced many other bugs in that process. :-)
+ PaintEditorMorph
+ PaintColorPickerMorph
+ PaintCanvasMorph
 
 
-    revision history
-    ----------------
-    May 10 - first full release (Kartik)
-    May 14 - bugfixes, Snap integration (Jens)
-    May 16 - flat design adjustments (Jens)
-    July 12 - pipette tool, code formatting adjustments (Jens)
-    Sept 16 - flood fill freeze fix (Kartik)
-    Jan 08 - mouse leave dragging fix (Kartik)
-    Feb 11 - dynamically adjust to stage dimensions (Jens)
-    Apr 30 - localizations (Manuel)
-    June 3 - transformations (Kartik)
-    June 4 - tweaks (Jens)
-    Aug 24 - floodfill alpha-integer issue (Kartik)
-    Sep 29 - tweaks (Jens)
-    Sep 28 [of the following year :)] - Try to prevent antialiasing (Kartik)
-    Oct 02 - revert disable smoothing (Jens)
-    Dec 15 - center rotation point on costume creating (Craxic)
-    Jan 18 - avoid pixel collision detection in PaintCanvas (Jens)
-    Mar 22 - fixed automatic rotation center point mechanism (Jens)
-    May 10 - retina display support adjustments (Jens)
-*/
+ credits
+ -------
+ Nathan Dinsmore contributed a fully working prototype,
+ Nathan's brilliant flood-fill tool has been more or less
+ directly imported into this paint implementation.
+
+ Jens Mönig has contributed icons and bugfixes and says he has probably
+ introduced many other bugs in that process. :-)
+
+
+ revision history
+ ----------------
+ May 10 - first full release (Kartik)
+ May 14 - bugfixes, Snap integration (Jens)
+ May 16 - flat design adjustments (Jens)
+ July 12 - pipette tool, code formatting adjustments (Jens)
+ Sept 16 - flood fill freeze fix (Kartik)
+ Jan 08 - mouse leave dragging fix (Kartik)
+ Feb 11 - dynamically adjust to stage dimensions (Jens)
+ Apr 30 - localizations (Manuel)
+ June 3 - transformations (Kartik)
+ June 4 - tweaks (Jens)
+ Aug 24 - floodfill alpha-integer issue (Kartik)
+ Sep 29 - tweaks (Jens)
+ Sep 28 [of the following year :)] - Try to prevent antialiasing (Kartik)
+ Oct 02 - revert disable smoothing (Jens)
+ Dec 15 - center rotation point on costume creating (Craxic)
+ Jan 18 - avoid pixel collision detection in PaintCanvas (Jens)
+ Mar 22 - fixed automatic rotation center point mechanism (Jens)
+ May 10 - retina display support adjustments (Jens)
+ */
 
 /*global Point, Rectangle, DialogBoxMorph, AlignmentMorph, PushButtonMorph,
-Color, SymbolMorph, newCanvas, Morph, TextMorph, Costume, SpriteMorph, nop,
-localize, InputFieldMorph, SliderMorph, ToggleMorph, ToggleButtonMorph,
-BoxMorph, modules, radians, MorphicPreferences, getDocumentPositionOf,
-StageMorph, isNil*/
+ Color, SymbolMorph, newCanvas, Morph, TextMorph, Costume, SpriteMorph, nop,
+ localize, InputFieldMorph, SliderMorph, ToggleMorph, ToggleButtonMorph,
+ BoxMorph, modules, radians, MorphicPreferences, getDocumentPositionOf,
+ StageMorph, isNil*/
 
 // Global stuff ////////////////////////////////////////////////////////
 
@@ -114,7 +114,9 @@ PaintEditorMorph.prototype.init = function () {
 PaintEditorMorph.prototype.buildContents = function () {
     var myself = this;
 
-    this.paper = new PaintCanvasMorph(function () {return myself.shift; });
+    this.paper = new PaintCanvasMorph(function () {
+        return myself.shift;
+    });
     this.paper.setExtent(StageMorph.prototype.dimensions);
 
     this.addBody(new AlignmentMorph('row', this.padding));
@@ -164,27 +166,17 @@ PaintEditorMorph.prototype.buildContents = function () {
 
 PaintEditorMorph.prototype.buildToolbox = function () {
     var tools = {
-            brush:
-                "Paintbrush tool\n(free draw)",
-            rectangle:
-                "Stroked Rectangle\n(shift: square)",
-            circle:
-                "Stroked Ellipse\n(shift: circle)",
-            eraser:
-                "Eraser tool",
-            crosshairs:
-                "Set the rotation center",
+            brush: "Paintbrush tool\n(free draw)",
+            rectangle: "Stroked Rectangle\n(shift: square)",
+            circle: "Stroked Ellipse\n(shift: circle)",
+            eraser: "Eraser tool",
+            crosshairs: "Set the rotation center",
 
-            line:
-                "Line tool\n(shift: vertical/horizontal)",
-            rectangleSolid:
-                "Filled Rectangle\n(shift: square)",
-            circleSolid:
-                "Filled Ellipse\n(shift: circle)",
-            paintbucket:
-                "Fill a region",
-            pipette:
-                "Pipette tool\n(pick a color anywhere)"
+            line: "Line tool\n(shift: vertical/horizontal)",
+            rectangleSolid: "Filled Rectangle\n(shift: square)",
+            circleSolid: "Filled Ellipse\n(shift: circle)",
+            paintbucket: "Fill a region",
+            pipette: "Pipette tool\n(pick a color anywhere)"
         },
         myself = this,
         left = this.toolbox.left(),
@@ -219,12 +211,16 @@ PaintEditorMorph.prototype.buildEdits = function () {
 
     this.edits.add(this.pushButton(
         "undo",
-        function () {paper.undo(); }
+        function () {
+            paper.undo();
+        }
     ));
 
     this.edits.add(this.pushButton(
         "clear",
-        function () {paper.clearCanvas(); }
+        function () {
+            paper.clearCanvas();
+        }
     ));
     this.edits.fixLayout();
 };
@@ -233,19 +229,27 @@ PaintEditorMorph.prototype.buildScaleBox = function () {
     var paper = this.paper;
     this.scaleBox.add(this.pushButton(
         "grow",
-        function () {paper.scale(0.05, 0.05); }
+        function () {
+            paper.scale(0.05, 0.05);
+        }
     ));
     this.scaleBox.add(this.pushButton(
         "shrink",
-        function () {paper.scale(-0.05, -0.05); }
+        function () {
+            paper.scale(-0.05, -0.05);
+        }
     ));
     this.scaleBox.add(this.pushButton(
         "flip ↔",
-        function () {paper.scale(-2, 0); }
+        function () {
+            paper.scale(-2, 0);
+        }
     ));
     this.scaleBox.add(this.pushButton(
         "flip ↕",
-        function () {paper.scale(0, -2); }
+        function () {
+            paper.scale(0, -2);
+        }
     ));
     this.scaleBox.fixLayout();
 };
@@ -294,8 +298,12 @@ PaintEditorMorph.prototype.fixLayout = function () {
         this.paper.buildContents();
         this.paper.drawNew();
     }
-    if (this.controls) {this.controls.fixLayout(); }
-    if (this.body) {this.body.fixLayout(); }
+    if (this.controls) {
+        this.controls.fixLayout();
+    }
+    if (this.body) {
+        this.body.fixLayout();
+    }
     PaintEditorMorph.uber.fixLayout.call(this);
 
     Morph.prototype.trackChanges = oldFlag;
@@ -318,7 +326,9 @@ PaintEditorMorph.prototype.ok = function () {
 };
 
 PaintEditorMorph.prototype.cancel = function () {
-    if (this.oncancel) {this.oncancel(); }
+    if (this.oncancel) {
+        this.oncancel();
+    }
     this.destroy();
 };
 
@@ -344,8 +354,8 @@ PaintEditorMorph.prototype.populatePropertiesMenu = function () {
                     for (j = 0; j < 15; j += 5) {
                         ctx.fillStyle =
                             ((j + i) / 5) % 2 === 0 ?
-                                            "rgba(0, 0, 0, 0.2)" :
-                                            "rgba(0, 0, 0, 0.5)";
+                                "rgba(0, 0, 0, 0.2)" :
+                                "rgba(0, 0, 0, 0.5)";
                         ctx.fillRect(i, j, 5, 5);
 
                     }
@@ -399,9 +409,13 @@ PaintEditorMorph.prototype.populatePropertiesMenu = function () {
     pc.constrain = new ToggleMorph(
         "checkbox",
         this,
-        function () {myself.shift = !myself.shift; },
+        function () {
+            myself.shift = !myself.shift;
+        },
         "Constrain proportions of shapes?\n(you can also hold shift)",
-        function () {return myself.shift; }
+        function () {
+            return myself.shift;
+        }
     );
     c.add(pc.colorpicker);
     //c.add(pc.primaryColorButton);
@@ -426,7 +440,9 @@ PaintEditorMorph.prototype.toolButton = function (icon, hint) {
             }
         },
         new SymbolMorph(icon, 18),
-        function () {return myself.paper.currentTool === icon; }
+        function () {
+            return myself.paper.currentTool === icon;
+        }
     );
 
     button.hint = hint;
@@ -541,7 +557,7 @@ PaintColorPickerMorph.prototype.drawNew = function () {
 
 PaintColorPickerMorph.prototype.mouseDownLeft = function (pos) {
     if ((pos.subtract(this.position()).x > this.width() * 2 / 3) &&
-            (pos.subtract(this.position()).y > this.height() - 10)) {
+        (pos.subtract(this.position()).y > this.height() - 10)) {
         this.action("transparent");
     } else {
         this.action(this.getPixelColor(pos));
@@ -553,9 +569,9 @@ PaintColorPickerMorph.prototype.mouseMove =
 
 // PaintCanvasMorph ///////////////////////////
 /*
-    A canvas which reacts to drag events to
-    modify its image, based on a 'tool' property.
-*/
+ A canvas which reacts to drag events to
+ modify its image, based on a 'tool' property.
+ */
 
 PaintCanvasMorph.prototype = new Morph();
 PaintCanvasMorph.prototype.constructor = PaintCanvasMorph;
@@ -585,9 +601,9 @@ PaintCanvasMorph.prototype.init = function (shift) {
     this.brushBuffer = [];
     this.undoBuffer = [];
     this.isShiftPressed = shift || function () {
-        var key = this.world().currentKey;
-        return (key === 16);
-    };
+            var key = this.world().currentKey;
+            return (key === 16);
+        };
     // should we calculate the center of the image ourselves,
     // or use the user position
     this.automaticCrosshairs = true;
@@ -596,7 +612,7 @@ PaintCanvasMorph.prototype.init = function (shift) {
 };
 
 // Calculate the center of all the non-transparent pixels on the canvas.
-PaintCanvasMorph.prototype.calculateCanvasCenter = function(canvas) {
+PaintCanvasMorph.prototype.calculateCanvasCenter = function (canvas) {
     var canvasBounds = Costume.prototype.canvasBoundingBox(canvas);
     if (canvasBounds === null) {
         return null;
@@ -759,13 +775,13 @@ PaintCanvasMorph.prototype.floodfill = function (sourcepoint) {
 
     // if already filled, abort
     if (sourcecolor[3] === 0 &&
-            this.settings.primarycolor === "transparent") {
+        this.settings.primarycolor === "transparent") {
         return;
     }
     if (sourcecolor[0] === this.settings.primarycolor.r &&
-            sourcecolor[1] === this.settings.primarycolor.g &&
-            sourcecolor[2] === this.settings.primarycolor.b &&
-            sourcecolor[3] === this.settings.primarycolor.a) {
+        sourcecolor[1] === this.settings.primarycolor.g &&
+        sourcecolor[2] === this.settings.primarycolor.b &&
+        sourcecolor[3] === this.settings.primarycolor.a) {
         return;
     }
     if (sourcecolor[3] === 0 && this.settings.primarycolor.a === 0) {
@@ -812,7 +828,7 @@ PaintCanvasMorph.prototype.mouseDownLeft = function (pos) {
         return this.floodfill(pos.subtract(this.bounds.origin));
     }
     if (this.settings.primarycolor === "transparent" &&
-            this.currentTool !== "crosshairs") {
+        this.currentTool !== "crosshairs") {
         this.erasermask = newCanvas(this.extent(), true);
         this.merge(this.paper, this.erasermask);
     }
@@ -839,9 +855,11 @@ PaintCanvasMorph.prototype.mouseMove = function (pos) {
     function newW() {
         return Math.max(Math.abs(w), Math.abs(h)) * (w / Math.abs(w));
     }
+
     function newH() {
         return Math.max(Math.abs(w), Math.abs(h)) * (h / Math.abs(h));
     }
+
     this.brushBuffer.push([p, q]);
     mctx.lineWidth = this.settings.linewidth;
     mctx.clearRect(0, 0, this.bounds.width(), this.bounds.height()); // mask
@@ -849,7 +867,7 @@ PaintCanvasMorph.prototype.mouseMove = function (pos) {
     this.dragRect.corner = relpos.subtract(this.dragRect.origin); // reset crn
 
     if (this.settings.primarycolor === "transparent" &&
-            this.currentTool !== "crosshairs") {
+        this.currentTool !== "crosshairs") {
         this.merge(this.erasermask, this.mask);
         pctx.clearRect(0, 0, this.bounds.width(), this.bounds.height());
         mctx.globalCompositeOperation = "destination-out";
@@ -858,107 +876,107 @@ PaintCanvasMorph.prototype.mouseMove = function (pos) {
         mctx.strokeStyle = this.settings.primarycolor.toString();
     }
     switch (this.currentTool) {
-    case "rectangle":
-        if (this.isShiftPressed()) {
-            mctx.strokeRect(x, y, newW() * 2, newH() * 2);
-        } else {
-            mctx.strokeRect(x, y, w * 2, h * 2);
-        }
-        break;
-    case "rectangleSolid":
-        if (this.isShiftPressed()) {
-            mctx.fillRect(x, y, newW() * 2, newH() * 2);
-        } else {
-            mctx.fillRect(x, y, w * 2, h * 2);
-        }
-        break;
-    case "brush":
-        mctx.lineCap = "round";
-        mctx.lineJoin = "round";
-        mctx.beginPath();
-        mctx.moveTo(this.brushBuffer[0][0], this.brushBuffer[0][1]);
-        for (i = 0; i < this.brushBuffer.length; i += 1) {
-            mctx.lineTo(this.brushBuffer[i][0], this.brushBuffer[i][1]);
-        }
-        mctx.stroke();
-        break;
-    case "line":
-        mctx.beginPath();
-        mctx.moveTo(x, y);
-        if (this.isShiftPressed()) {
-            if (Math.abs(h) > Math.abs(w)) {
-                mctx.lineTo(x, q);
+        case "rectangle":
+            if (this.isShiftPressed()) {
+                mctx.strokeRect(x, y, newW() * 2, newH() * 2);
             } else {
-                mctx.lineTo(p, y);
+                mctx.strokeRect(x, y, w * 2, h * 2);
             }
-        } else {
-            mctx.lineTo(p, q);
-        }
-        mctx.stroke();
-        break;
-    case "circle":
-    case "circleSolid":
-        mctx.beginPath();
-        if (this.isShiftPressed()) {
-            mctx.arc(
-                x,
-                y,
-                new Point(x, y).distanceTo(new Point(p, q)),
-                0,
-                Math.PI * 2,
-                false
-            );
-        } else {
-            for (i = 0; i < width; i += 1) {
-                mctx.lineTo(
-                    i,
-                    (2 * h) * Math.sqrt(2 - Math.pow(
-                        (i - x) / (2 * w),
-                        2
-                    )) + y
+            break;
+        case "rectangleSolid":
+            if (this.isShiftPressed()) {
+                mctx.fillRect(x, y, newW() * 2, newH() * 2);
+            } else {
+                mctx.fillRect(x, y, w * 2, h * 2);
+            }
+            break;
+        case "brush":
+            mctx.lineCap = "round";
+            mctx.lineJoin = "round";
+            mctx.beginPath();
+            mctx.moveTo(this.brushBuffer[0][0], this.brushBuffer[0][1]);
+            for (i = 0; i < this.brushBuffer.length; i += 1) {
+                mctx.lineTo(this.brushBuffer[i][0], this.brushBuffer[i][1]);
+            }
+            mctx.stroke();
+            break;
+        case "line":
+            mctx.beginPath();
+            mctx.moveTo(x, y);
+            if (this.isShiftPressed()) {
+                if (Math.abs(h) > Math.abs(w)) {
+                    mctx.lineTo(x, q);
+                } else {
+                    mctx.lineTo(p, y);
+                }
+            } else {
+                mctx.lineTo(p, q);
+            }
+            mctx.stroke();
+            break;
+        case "circle":
+        case "circleSolid":
+            mctx.beginPath();
+            if (this.isShiftPressed()) {
+                mctx.arc(
+                    x,
+                    y,
+                    new Point(x, y).distanceTo(new Point(p, q)),
+                    0,
+                    Math.PI * 2,
+                    false
                 );
+            } else {
+                for (i = 0; i < width; i += 1) {
+                    mctx.lineTo(
+                        i,
+                        (2 * h) * Math.sqrt(2 - Math.pow(
+                                (i - x) / (2 * w),
+                                2
+                            )) + y
+                    );
+                }
+                for (i = width; i > 0; i -= 1) {
+                    mctx.lineTo(
+                        i,
+                        -1 * (2 * h) * Math.sqrt(2 - Math.pow(
+                                (i - x) / (2 * w),
+                                2
+                            )) + y
+                    );
+                }
             }
-            for (i = width; i > 0; i -= 1) {
-                mctx.lineTo(
-                    i,
-                    -1 * (2 * h) * Math.sqrt(2 - Math.pow(
-                        (i - x) / (2 * w),
-                        2
-                    )) + y
-                );
+            mctx.closePath();
+            if (this.currentTool === "circleSolid") {
+                mctx.fill();
+            } else {
+                if (this.currentTool === "circle") {
+                    mctx.stroke();
+                }
             }
-        }
-        mctx.closePath();
-        if (this.currentTool === "circleSolid") {
-            mctx.fill();
-        } else {
-            if (this.currentTool === "circle") {
-                mctx.stroke();
+            break;
+        case "crosshairs":
+            // Disable automatic crosshairs: user has now chosen where they should be.
+            this.automaticCrosshairs = false;
+            this.rotationCenter = relpos.copy();
+            this.drawcrosshair(mctx);
+            break;
+        case "eraser":
+            this.merge(this.paper, this.mask);
+            mctx.save();
+            mctx.globalCompositeOperation = "destination-out";
+            mctx.beginPath();
+            mctx.moveTo(this.brushBuffer[0][0], this.brushBuffer[0][1]);
+            for (i = 0; i < this.brushBuffer.length; i += 1) {
+                mctx.lineTo(this.brushBuffer[i][0], this.brushBuffer[i][1]);
             }
-        }
-        break;
-    case "crosshairs":
-        // Disable automatic crosshairs: user has now chosen where they should be.
-        this.automaticCrosshairs = false;
-        this.rotationCenter = relpos.copy();
-        this.drawcrosshair(mctx);
-        break;
-    case "eraser":
-        this.merge(this.paper, this.mask);
-        mctx.save();
-        mctx.globalCompositeOperation = "destination-out";
-        mctx.beginPath();
-        mctx.moveTo(this.brushBuffer[0][0], this.brushBuffer[0][1]);
-        for (i = 0; i < this.brushBuffer.length; i += 1) {
-            mctx.lineTo(this.brushBuffer[i][0], this.brushBuffer[i][1]);
-        }
-        mctx.stroke();
-        mctx.restore();
-        this.paper = newCanvas(this.extent(), true);
-        this.merge(this.mask, this.paper);
-        break;
-    default:
-        nop();
+            mctx.stroke();
+            mctx.restore();
+            this.paper = newCanvas(this.extent(), true);
+            this.merge(this.mask, this.paper);
+            break;
+        default:
+            nop();
     }
     this.previousDragPoint = relpos;
     this.drawNew();

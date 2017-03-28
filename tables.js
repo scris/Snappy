@@ -1,74 +1,74 @@
 /*
 
-    tables.js
+ tables.js
 
-    basic spreadsheet elements for Snap!
+ basic spreadsheet elements for Snap!
 
-    written by Jens Mönig
-    jens@moenig.org
+ written by Jens Mönig
+ jens@moenig.org
 
-    Copyright (C) 2016 by Jens Mönig
+ Copyright (C) 2016 by Jens Mönig
 
-    This file is part of Snap!.
+ This file is part of Snap!.
 
-    Snap! is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of
-    the License, or (at your option) any later version.
+ Snap! is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of
+ the License, or (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
 
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-    prerequisites:
-    --------------
-    needs morphic.js, list.js, widgets.js, byob.js, threads
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-    I. hierarchy
-    -------------
-    the following tree lists all constructors hierarchically,
-    indentation indicating inheritance. Refer to this list to get a
-    contextual overview:
-
-    DialogBoxMorph**
-        TableDialogMorph
-    Morph*
-        FrameMorph*
-            TableMorph
-        TableCellMorph
-        TableFrameMorph
-    Table
-
-    * from morphic.js
-    ** from widgets.js
+ prerequisites:
+ --------------
+ needs morphic.js, list.js, widgets.js, byob.js, threads
 
 
-    II. toc
-    -------
-    the following list shows the order in which all constructors are
-    defined. Use this list to locate code in this document:
+ I. hierarchy
+ -------------
+ the following tree lists all constructors hierarchically,
+ indentation indicating inheritance. Refer to this list to get a
+ contextual overview:
 
-    Table
-    TableCellMorph
-    TableMorph
-    TableFrameMorph
-    TableDialogMorph
+ DialogBoxMorph**
+ TableDialogMorph
+ Morph*
+ FrameMorph*
+ TableMorph
+ TableCellMorph
+ TableFrameMorph
+ Table
 
-*/
+ * from morphic.js
+ ** from widgets.js
+
+
+ II. toc
+ -------
+ the following list shows the order in which all constructors are
+ defined. Use this list to locate code in this document:
+
+ Table
+ TableCellMorph
+ TableMorph
+ TableFrameMorph
+ TableDialogMorph
+
+ */
 
 // Global settings /////////////////////////////////////////////////////
 
 /*global modules, Point, newCanvas, Morph, fontHeight, SliderMorph, List,
-MorphicPreferences, FrameMorph, HandleMorph, DialogBoxMorph, isString,
-SpriteMorph, Context, Costume, ArgMorph, BlockEditorMorph,
-SyntaxElementMorph, MenuMorph, SpriteBubbleMorph, SpeechBubbleMorph,
-CellMorph, ListWatcherMorph, isNil, BoxMorph, Variable, isSnapObject*/
+ MorphicPreferences, FrameMorph, HandleMorph, DialogBoxMorph, isString,
+ SpriteMorph, Context, Costume, ArgMorph, BlockEditorMorph,
+ SyntaxElementMorph, MenuMorph, SpriteBubbleMorph, SpeechBubbleMorph,
+ CellMorph, ListWatcherMorph, isNil, BoxMorph, Variable, isSnapObject*/
 
 modules.tables = '2016-May-02';
 
@@ -80,11 +80,11 @@ var TableFrameMorph;
 // Table /////////////////////////////////////////////////////////////
 
 /*
-    Observable 2D data collections accessible by rows, columns and cells
-    with indices starting at 1.
-    currently only used for testing TableViews in Snap, because Snap
-    automatically displays 2D lists as tables.
-*/
+ Observable 2D data collections accessible by rows, columns and cells
+ with indices starting at 1.
+ currently only used for testing TableViews in Snap, because Snap
+ automatically displays 2D lists as tables.
+ */
 
 function Table(cols, rows) {
     this.colCount = +cols;
@@ -100,12 +100,12 @@ function Table(cols, rows) {
 
 // Table testing:
 
-Table.prototype.demo = function(aWorld) {
+Table.prototype.demo = function (aWorld) {
     // new Table(50, 10000).demo(world)
     var dlg;
     this.fillWithTestData();
     dlg = new TableDialogMorph(this);
-    dlg.popUp (aWorld);
+    dlg.popUp(aWorld);
 };
 
 // Table updating:
@@ -118,20 +118,24 @@ Table.prototype.changed = function () {
 
 Table.prototype.get = function (col, row) {
     if (!col) {
-        if (!row) {return [this.rowCount]; }
+        if (!row) {
+            return [this.rowCount];
+        }
         return this.rowName(row);
     } else if (!row) {
         return this.colName(col);
     }
-    if (col > this.colCount || row > this.rowCount) {return null; }
+    if (col > this.colCount || row > this.rowCount) {
+        return null;
+    }
     return (this.contents[row - 1] || [])[col - 1];
 };
 
-Table.prototype.row = function(row) {
+Table.prototype.row = function (row) {
     return this.contents[row - 1];
 };
 
-Table.prototype.col = function(col) {
+Table.prototype.col = function (col) {
     var dta = [],
         c = col - 1,
         i;
@@ -144,9 +148,13 @@ Table.prototype.col = function(col) {
 Table.prototype.colName = function (col) {
     // answer the specified name or a capital letter A-Z
     // repeated accordingly
-    if (col > this.colCount) {return null; }
+    if (col > this.colCount) {
+        return null;
+    }
     var name = this.colNames[col - 1];
-    if (name !== undefined) {return name; }
+    if (name !== undefined) {
+        return name;
+    }
     return String.fromCharCode(64 + ((col % 26) || 26)).repeat(
         Math.floor((col - 1) / 26) + 1
     );
@@ -154,7 +162,9 @@ Table.prototype.colName = function (col) {
 
 Table.prototype.rowName = function (row) {
     // answer the specified name or row number
-    if (row > this.rowCount) {return null; }
+    if (row > this.rowCount) {
+        return null;
+    }
     return this.rowNames[row - 1] || row;
 };
 
@@ -179,8 +189,12 @@ Table.prototype.set = function (data, col, row) {
 
 Table.prototype.setRows = function (rowsArray, colNames, rowNames) {
     this.contents = rowsArray;
-    if (colNames) {this.colNames = colNames; }
-    if (rowNames) {this.rowNames = rowNames; }
+    if (colNames) {
+        this.colNames = colNames;
+    }
+    if (rowNames) {
+        this.rowNames = rowNames;
+    }
     this.changed();
 };
 
@@ -191,8 +205,12 @@ Table.prototype.setCols = function (colsArray, colNames, rowNames) {
             this.contents[r][c] = colsArray[c][r];
         }
     }
-    if (colNames) {this.colNames = colNames; }
-    if (rowNames) {this.rowNames = rowNames; }
+    if (colNames) {
+        this.colNames = colNames;
+    }
+    if (rowNames) {
+        this.rowNames = rowNames;
+    }
     this.changed();
 };
 
@@ -257,7 +275,7 @@ Table.prototype.fillWithTestData = function () {
     var c, r;
     for (c = 1; c <= this.colCount; c += 1) {
         for (r = 1; r <= this.rowCount; r += 1) {
-            this.set (this.colName(c) + this.rowName(r), c, r);
+            this.set(this.colName(c) + this.rowName(r), c, r);
         }
     }
 };
@@ -292,7 +310,9 @@ TableCellMorph.prototype.init = function (data, extent, isLabel) {
 
     // override inherited properites:
     this.noticesTransparentClick = true;
-    if (extent) {this.silentSetExtent(extent); }
+    if (extent) {
+        this.silentSetExtent(extent);
+    }
     this.drawNew();
 };
 
@@ -321,17 +341,17 @@ TableCellMorph.prototype.drawData = function (lbl, bg) {
         context = this.image.getContext('2d'),
         fontSize = SyntaxElementMorph.prototype.fontSize,
         empty = TableMorph.prototype.highContrast ? 'rgb(220, 220, 220)'
-                : 'transparent',
+            : 'transparent',
         orphaned = 'rgb(217, 77, 17)',
         fontStyle = this.isLabel ?
-                (this.data instanceof Array ? 'italic'  : '')
-                        : this.shouldBeList() ? 'bold' : '',
+            (this.data instanceof Array ? 'italic' : '')
+            : this.shouldBeList() ? 'bold' : '',
         font = fontStyle + ' ' + fontSize + 'px Helvetica, Arial, sans-serif',
         background = bg || (this.isLabel ? empty
                 : (this.shouldBeList() ? orphaned
-                        : (this.isOvershooting() ? 'white'
-                                : (isNil(this.data) ? empty : 'white')))),
-        foreground = !this.isLabel && this.shouldBeList()? 'white' : 'black',
+                    : (this.isOvershooting() ? 'white'
+                        : (isNil(this.data) ? empty : 'white')))),
+        foreground = !this.isLabel && this.shouldBeList() ? 'white' : 'black',
         width = this.width(),
         height = this.height(),
         txtWidth,
@@ -353,7 +373,9 @@ TableCellMorph.prototype.drawData = function (lbl, bg) {
         context.fillRect(0, 0, width, height);
     }
 
-    if (!dta) {return; }
+    if (!dta) {
+        return;
+    }
     if (dta instanceof HTMLCanvasElement) {
         x = Math.max((width - dta.width) / 2, 0);
         y = Math.max((height - dta.height) / 2, 0);
@@ -481,19 +503,17 @@ TableMorph.prototype.highContrast = false;
 
 // TableMorph instance creation:
 
-function TableMorph(
-    table,
-    // optional parameters below this line
-    scrollBarSize,
-    extent,
-    startRow,
-    startCol,
-    globalColWidth,
-    colWidths,
-    rowHeight,
-    colLabelHeight,
-    padding
-) {
+function TableMorph(table,
+                    // optional parameters below this line
+                    scrollBarSize,
+                    extent,
+                    startRow,
+                    startCol,
+                    globalColWidth,
+                    colWidths,
+                    rowHeight,
+                    colLabelHeight,
+                    padding) {
     this.init(
         table,
         scrollBarSize,
@@ -508,18 +528,16 @@ function TableMorph(
     );
 }
 
-TableMorph.prototype.init = function (
-    table,
-    scrollBarSize,
-    extent,
-    startRow,
-    startCol,
-    globalColWidth,
-    colWidths,
-    rowHeight,
-    colLabelHeight,
-    padding
-) {
+TableMorph.prototype.init = function (table,
+                                      scrollBarSize,
+                                      extent,
+                                      startRow,
+                                      startCol,
+                                      globalColWidth,
+                                      colWidths,
+                                      rowHeight,
+                                      colLabelHeight,
+                                      padding) {
     // additional properties:
     this.table = table;
     this.scrollBarSize = scrollBarSize || MorphicPreferences.scrollBarSize;
@@ -563,7 +581,9 @@ TableMorph.prototype.init = function (
 
     // override inherited properites:
     // this.fps = 3; // this will slow down the sliders (!)
-    if (extent) {this.silentSetExtent(extent); }
+    if (extent) {
+        this.silentSetExtent(extent);
+    }
     this.initScrollBars();
     this.drawNew();
 };
@@ -657,8 +677,8 @@ TableMorph.prototype.drawNew = function () {
             this.padding + this.colLabelHeight,
             w,
             (this.rowHeight + this.padding) *
-                (this.table.rows() + 1 - this.startRow) +
-                this.padding
+            (this.table.rows() + 1 - this.startRow) +
+            this.padding
         );
     }
 
@@ -692,7 +712,7 @@ TableMorph.prototype.buildCells = function () {
                 ),
                 new Point(
                     !c ? this.rowLabelWidth
-                            : this.colWidth(c + this.startCol - 1),
+                        : this.colWidth(c + this.startCol - 1),
                     !r ? this.colLabelHeight : this.rowHeight
                 ),
                 !(r && c), // isLabel
@@ -701,10 +721,10 @@ TableMorph.prototype.buildCells = function () {
             cell.setPosition(
                 new Point(
                     !c ? this.padding
-                            : this.columns[c - 1],
+                        : this.columns[c - 1],
                     !r ? this.padding :
-                            this.padding * 2 + this.colLabelHeight +
-                                ((r - 1) * (this.rowHeight + this.padding))
+                        this.padding * 2 + this.colLabelHeight +
+                        ((r - 1) * (this.rowHeight + this.padding))
                 ).add(pos)
             );
             this.add(cell);
@@ -737,7 +757,9 @@ TableMorph.prototype.drawData = function (noScrollUpdate) {
             }
         }
     }
-    if (!noScrollUpdate) {this.updateScrollBars(); }
+    if (!noScrollUpdate) {
+        this.updateScrollBars();
+    }
     this.changed();
 };
 
@@ -761,7 +783,9 @@ TableMorph.prototype.showData = function (startCol, startRow, noScrollUpdate) {
     var c = startCol || this.startCol,
         r = startRow || this.startRow;
     if (c === this.startCol) {
-        if (r === this.startRow) {return; } // no change
+        if (r === this.startRow) {
+            return;
+        } // no change
         this.startRow = r;
         this.rows = this.visibleRows();
         this.drawData(noScrollUpdate);
@@ -793,7 +817,7 @@ TableMorph.prototype.update = function () {
     var oldCols, oldRows,
         version = this.table instanceof List ?
             this.table.version(this.startRow, this.rows)
-                    : this.table.lastChanged;
+            : this.table.lastChanged;
     if (this.tableVersion === version && !this.wantsUpdate) {
         return;
     }
@@ -822,15 +846,15 @@ TableMorph.prototype.rowLabelsWidth = function () {
     ctx.font = 'italic ' + SyntaxElementMorph.prototype.fontSize +
         'px Helvetica, Arial, sans-serif';
     return Math.max(
-        0,
-        Math.max.apply(
-            null,
-            this.table.columnNames().map(function (name) {
-                return name ? ctx.measureText(name).width : 0;
-            })
-        )
-    ) || ctx.measureText(this.table.rows().toString()).width +
-            (6 * SyntaxElementMorph.prototype.scale);
+            0,
+            Math.max.apply(
+                null,
+                this.table.columnNames().map(function (name) {
+                    return name ? ctx.measureText(name).width : 0;
+                })
+            )
+        ) || ctx.measureText(this.table.rows().toString()).width +
+        (6 * SyntaxElementMorph.prototype.scale);
 };
 
 TableMorph.prototype.columnsLayout = function () {
@@ -858,8 +882,8 @@ TableMorph.prototype.columnsLayout = function () {
     this.startCol = Math.min(this.startCol, this.maxStartCol);
     colNum = this.startCol;
     while (x < this.width() &&
-        (colNum < (this.table.cols() + this.startCol))
-    ) {
+    (colNum < (this.table.cols() + this.startCol))
+        ) {
         w = this.colWidth(colNum);
         c.push(x);
         x += w;
@@ -878,7 +902,9 @@ TableMorph.prototype.visibleRows = function () {
     // modifies startRow if needed
     var rest = this.height() - this.colLabelHeight - this.padding,
         possible;
-    if (rest < 0) {return 0; }
+    if (rest < 0) {
+        return 0;
+    }
     possible = Math.ceil(rest / (this.rowHeight + this.padding));
     this.maxStartRow = Math.max(1, this.table.rows() - possible + 2);
     this.startRow = Math.min(this.startRow, this.maxStartRow);
@@ -900,7 +926,7 @@ TableMorph.prototype.globalExtent = function () {
     return new Point(
         w + this.padding,
         this.colLabelHeight + (this.padding * 2) +
-            ((this.rowHeight + this.padding) * this.table.rows())
+        ((this.rowHeight + this.padding) * this.table.rows())
     );
 };
 
@@ -934,13 +960,13 @@ TableMorph.prototype.mouseDownLeft = function (pos) {
 TableMorph.prototype.mouseClickLeft = function (pos) {
     this.dragAnchor = null;
     this.resizeAnchor = null;
-        this.resizeRow = null;
+    this.resizeRow = null;
 };
 
 TableMorph.prototype.mouseLeaveDragging = function (pos) {
     this.dragAnchor = null;
     this.resizeAnchor = null;
-        this.resizeRow = null;
+    this.resizeRow = null;
 };
 
 TableMorph.prototype.mouseDoubleClick = function (pos) {
@@ -976,7 +1002,7 @@ TableMorph.prototype.resizeCells = function (pos) {
         this.colWidths[this.resizeCol - 1] = Math.max(
             16,
             (this.colWidths[this.resizeCol - 1] || this.globalColWidth) +
-                delta.x
+            delta.x
         );
     } else if (this.resizeRow) {
         this.rowHeight = Math.max(16, this.rowHeight + delta.y);
@@ -1062,7 +1088,9 @@ TableMorph.prototype.showListView = function () {
         SpeechBubbleMorph,
         CellMorph
     ]);
-    if (!view) {return; }
+    if (!view) {
+        return;
+    }
     if (view instanceof SpriteBubbleMorph) {
         view.changed();
         view.drawNew(true);
@@ -1130,7 +1158,9 @@ TableFrameMorph.prototype.init = function (tableMorph, noResize) {
 
 TableFrameMorph.prototype.fixLayout = function () {
     var ext = this.extent();
-    if (this.tableMorph.extent().eq(ext)) {return; }
+    if (this.tableMorph.extent().eq(ext)) {
+        return;
+    }
     this.tableMorph.setExtent(this.extent());
     if (this.parent && this.parent.fixLayout) {
         this.parent.fixLayout();
@@ -1166,12 +1196,10 @@ function TableDialogMorph(data, globalColWidth, colWidths, rowHeight) {
     this.init(data, globalColWidth, colWidths, rowHeight);
 }
 
-TableDialogMorph.prototype.init = function (
-    data,
-    globalColWidth,
-    colWidths,
-    rowHeight
-) {
+TableDialogMorph.prototype.init = function (data,
+                                            globalColWidth,
+                                            colWidths,
+                                            rowHeight) {
     // additional properties:
     this.handle = null;
     this.data = data;
@@ -1188,12 +1216,10 @@ TableDialogMorph.prototype.init = function (
     this.buildContents(data, globalColWidth, colWidths, rowHeight);
 };
 
-TableDialogMorph.prototype.buildContents = function (
-    data,
-    globalColWidth,
-    colWidths,
-    rowHeight
-) {
+TableDialogMorph.prototype.buildContents = function (data,
+                                                     globalColWidth,
+                                                     colWidths,
+                                                     rowHeight) {
     this.tableView = new TableMorph(
         data,
         null, // scrollBarSize
