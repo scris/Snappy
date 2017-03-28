@@ -2,8 +2,9 @@
 Snappy - A graphical programming solution with a focus
 on accessibility for both, kids and teachers.
 
-Entirely based on http://snap.berkeley.edu
-,a visual, blocks based programming language
+Entirely based on
+http://snap.berkeley.edu,
+a visual, blocks based programming language
 inspired by Scratch
 
 
