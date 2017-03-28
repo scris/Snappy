@@ -1371,7 +1371,7 @@ var sb = (function (sb) {
                 if (media.filter(function (m) {
                         return m.className === 'SoundMedia'
                     }).length > 0) {
-                    console.warn('Sounds are unimplemented');
+                    console.warn('sounds are unimplemented');
                 }
                 return [id(n('list'))];
             }

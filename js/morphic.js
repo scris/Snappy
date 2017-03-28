@@ -1420,7 +1420,7 @@ function copy(target) {
 
  Even when in retina mode it often makes sense to use non-high-resolution
  canvasses for simple shapes in order to save system resources and
- optimize performance. Examples are costumes and backgrounds in Snap.
+ optimize performance. examples are costumes and backgrounds in Snap.
  In Morphic you can create new canvas elements using
 
  newCanvas(extentPoint [, nonRetinaFlag])
@@ -8810,7 +8810,7 @@ TextMorph.prototype.drawNew = function () {
     context.textAlign = 'left';
     context.textBaseline = 'bottom';
 
-    // fill the background, if desired
+    // fill the backgrounds, if desired
     if (this.backgroundColor) {
         context.fillStyle = this.backgroundColor.toString();
         context.fillRect(0, 0, this.width(), this.height());

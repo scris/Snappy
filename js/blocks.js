@@ -13050,12 +13050,12 @@ CommentMorph.prototype.stackHeight = function () {
  I offer keyboard navigation for syntax elements, blocks and scripts:
 
  activate:
- - shift + click on a scripting pane's background
+ - shift + click on a scripting pane's backgrounds
  - shift + click on any block
  - shift + enter in the IDE's edit mode
 
  stop editing:
- - left-click on scripting pane's background
+ - left-click on scripting pane's backgrounds
  - esc
 
  navigate among scripts:

@@ -150,7 +150,7 @@ PushButtonMorph.prototype.init = function (target,
     this.labelMinExtent = new Point(0, 0);
     this.hint = hint || null;
     this.template = template || null; // for pre-computed backbrounds
-    // if a template is specified, its background images are used as cache
+    // if a template is specified, its backgrounds images are used as cache
 
     // initialize inherited properties:
     TriggerMorph.uber.init.call(this);
@@ -468,7 +468,7 @@ PushButtonMorph.prototype.createLabel = function () {
 
 /*
  I am a two-state PushButton. When my state is "true" I keep my "pressed"
- background color. I can also be set to not auto-layout my bounds, in
+ backgrounds color. I can also be set to not auto-layout my bounds, in
  which case my label will left-align.
  */
 
@@ -491,7 +491,7 @@ function ToggleButtonMorph(colors, // color overrides, <array>: [normal, highlig
                            query, // predicate/selector
                            environment,
                            hint,
-                           template, // optional, for cached background images
+                           template, // optional, for cached backgrounds images
                            minWidth, // <num> optional, if specified label will left-align
                            hasPreview, // <bool> show press color on left edge (e.g. category)
                            isPicture // treat label as picture, i.e. don't apply typography

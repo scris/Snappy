@@ -6653,7 +6653,7 @@ StageMorph.prototype.userMenu = function () {
         menu.addItem(
             ide.currentSprite instanceof SpriteMorph ?
                 "turn pen trails into new costume..."
-                : "turn pen trails into new background...",
+                : "turn pen trails into new backgrounds...",
             function () {
                 var costume = new Costume(
                     myself.trailsCanvas,
@@ -6667,7 +6667,7 @@ StageMorph.prototype.userMenu = function () {
                 'turn all pen trails and stamps\n' +
                 'into a new costume for the\ncurrently selected sprite'
                 : 'turn all pen trails and stamps\n' +
-                'into a new background for the stage',
+                'into a new backgrounds for the stage',
             new Color(100, 0, 0)
         );
     }
@@ -6802,7 +6802,7 @@ StageMorph.prototype.showingVariableWatcher
 StageMorph.prototype.deleteVariableWatcher
     = SpriteMorph.prototype.deleteVariableWatcher;
 
-// StageMorph background management
+// StageMorph backgrounds management
 
 StageMorph.prototype.addCostume
     = SpriteMorph.prototype.addCostume;
@@ -7615,7 +7615,7 @@ CostumeEditorMorph.prototype.drawNew = function () {
 
     this.image = newCanvas(this.extent());
 
-    // draw the background
+    // draw the backgrounds
     if (!this.cachedTexture) {
         this.cachedTexture = this.createTexture();
 
@@ -7623,7 +7623,7 @@ CostumeEditorMorph.prototype.drawNew = function () {
     this.drawCachedTexture();
 
     /*
-     pattern = ctx.createPattern(this.background, 'repeat');
+     pattern = ctx.createPattern(this.backgrounds, 'repeat');
      ctx.fillStyle = pattern;
      ctx.fillRect(0, 0, this.size.x, this.size.y);
      */

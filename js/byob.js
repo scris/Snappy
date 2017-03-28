@@ -2567,7 +2567,7 @@ BlockLabelFragmentMorph.prototype.userMenu = function () {
 
 /*
  I am a space between words or inputs in a custom block prototype's label.
- When I am moused over I display a plus sign on a colored background
+ When I am moused over I display a plus sign on a colored backgrounds
  circle. I can be clicked to add a new word or input to the prototype.
  */
 
@@ -2626,7 +2626,7 @@ BlockLabelPlaceHolderMorph.prototype.drawNew = function () {
     this.image.width = width;
     this.image.height = this.height();
 
-    // draw background, if any
+    // draw backgrounds, if any
     if (this.isHighlighted) {
         cx = Math.floor(width / 2);
         cy = Math.floor(this.height() / 2);

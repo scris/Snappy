@@ -3047,7 +3047,7 @@ IDE_Morph.prototype.getMediaList = function (dirname, callback) {
 
 IDE_Morph.prototype.parseResourceFile = function (text) {
     // A Resource File lists all the files that could be loaded in a submenu
-    // Examples are libraries/LIBRARIES, Costumes/COSTUMES, etc
+    // examples are libraries/LIBRARIES, costumes/COSTUMES, etc
     // The file format is tab-delimited, with unix newlines:
     // file-name, Display Name, Help Text (optional)
     var parts,
@@ -6781,7 +6781,7 @@ SpriteIconMorph.prototype.init = function (aSprite, aTemplate) {
         query, // predicate/selector
         null, // environment
         hover, // hint
-        aTemplate // optional, for cached background images
+        aTemplate // optional, for cached backgrounds images
     );
 
     // override defaults and build additional components
@@ -7122,7 +7122,7 @@ SpriteIconMorph.prototype.copySound = function (sound) {
 // CostumeIconMorph ////////////////////////////////////////////////////
 
 /*
- I am a selectable element in the SpriteEditor's "Costumes" tab, keeping
+ I am a selectable element in the SpriteEditor's "costumes" tab, keeping
  a self-updating thumbnail of the costume I'm respresenting, and a
  self-updating label of the costume's name (in case it is changed
  elsewhere)
@@ -7199,7 +7199,7 @@ CostumeIconMorph.prototype.init = function (aCostume, aTemplate) {
         query, // predicate/selector
         null, // environment
         null, // hint
-        aTemplate // optional, for cached background images
+        aTemplate // optional, for cached backgrounds images
     );
 
     // override defaults and build additional components
@@ -7359,7 +7359,7 @@ CostumeIconMorph.prototype.prepareToBeGrabbed = function () {
 // TurtleIconMorph ////////////////////////////////////////////////////
 
 /*
- I am a selectable element in the SpriteEditor's "Costumes" tab, keeping
+ I am a selectable element in the SpriteEditor's "costumes" tab, keeping
  a thumbnail of the sprite's or stage's default "Turtle" costume.
  */
 
@@ -7434,7 +7434,7 @@ TurtleIconMorph.prototype.init = function (aSpriteOrStage, aTemplate) {
         query, // predicate/selector
         null, // environment
         null, // hint
-        aTemplate // optional, for cached background images
+        aTemplate // optional, for cached backgrounds images
     );
 
     // override defaults and build additional components
@@ -7728,7 +7728,7 @@ WardrobeMorph.prototype.reactToDropOf = function (icon) {
 // SoundIconMorph ///////////////////////////////////////////////////////
 
 /*
- I am an element in the SpriteEditor's "Sounds" tab.
+ I am an element in the SpriteEditor's "sounds" tab.
  */
 
 // SoundIconMorph inherits from ToggleButtonMorph (Widgets)
@@ -7787,7 +7787,7 @@ SoundIconMorph.prototype.init = function (aSound, aTemplate) {
         query, // predicate/selector
         null, // environment
         null, // hint
-        aTemplate // optional, for cached background images
+        aTemplate // optional, for cached backgrounds images
     );
 
     // override defaults and build additional components
