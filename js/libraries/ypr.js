@@ -1338,6 +1338,7 @@ var sb = (function (sb) {
                 return typeof value === 'string' || typeof value === 'number' ? n('l', {}, [t(value)]) :
                     value == null || typeof value === 'boolean' ? n('l') :
                         value.className === 'ScratchListMorph' ? id(n('list', {}, value.complex.map(function (object, i) {
+                            var item = undefined;
                             var item = object == null ? n('l', {}, [t((item = value.strings[i]) === 'nil' ? '' : item)]) :
                                 typeof object === 'string' ? nValue(object) :
                                     object && object[0] === 'block' ? nsScript(object[2])[0] : n('l');

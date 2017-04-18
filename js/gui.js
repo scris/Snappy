@@ -226,7 +226,7 @@ IDE_Morph.prototype.init = function (isAutoFill) {
     this.projectName = '';
     this.projectNotes = '';
 
-    this.logoURL = this.resourceURL('snap_logo_sm.png');
+    this.logoURL = this.resourceURL('static/snap_logo_sm.png');
     this.logo = null;
     this.controlBar = null;
     this.categories = null;
@@ -1853,7 +1853,7 @@ IDE_Morph.prototype.droppedBinary = function (anArrayBuffer, name) {
 
 // IDE_Morph button actions
 
-IDE_Morph.prototype.refreshPalette = function (shouldIgnorePosition) {
+    IDE_Morph.prototype.refreshPalette = function (shouldIgnorePosition) {
     var oldTop = this.palette.contents.top();
 
     this.createPalette();
@@ -2967,7 +2967,7 @@ IDE_Morph.prototype.projectMenu = function () {
         'Import tools',
         function () {
             myself.getURL(
-                myself.resourceURL('tools.xml'),
+                myself.resourceURL('libraries/tools.xml'),
                 function (txt) {
                     myself.droppedText(txt, 'tools');
                 }
@@ -2992,14 +2992,14 @@ IDE_Morph.prototype.projectMenu = function () {
     menu.addItem(
         localize(graphicsName) + '...',
         function () {
-            myself.importMedia(graphicsName);
+            myself.importAssets('assets/'+graphicsName);
         },
         'Select a costume from the media library'
     );
     menu.addItem(
         localize('Sounds') + '...',
         function () {
-            myself.importMedia('Sounds');
+            myself.importAssets('sounds');
         },
         'Select a sound from the media library'
     );
@@ -3076,13 +3076,13 @@ IDE_Morph.prototype.parseResourceFile = function (text) {
     return items;
 };
 
-IDE_Morph.prototype.importMedia = function (folderName) {
+IDE_Morph.prototype.importAssets = function (folderName) {
     // open a dialog box letting the user browse available "built-in"
     // costumes, backgrounds or sounds
     var myself = this,
         msg = this.showMessage('Opening ' + folderName + '...');
     this.getMediaList(
-        folderName,
+        'assets/'+folderName,
         function (items) {
             msg.destroy();
             myself.popupMediaImportDialog(folderName, items);
@@ -3092,7 +3092,7 @@ IDE_Morph.prototype.importMedia = function (folderName) {
 };
 
 IDE_Morph.prototype.popupMediaImportDialog = function (folderName, items) {
-    // private - this gets called by importMedia() and creates
+    // private - this gets called by importAssets() and creates
     // the actual dialog
     var dialog = new DialogBoxMorph().withKey('import' + folderName),
         frame = new ScrollFrameMorph(),
@@ -5843,7 +5843,7 @@ ProjectDialogMorph.prototype.setSource = function (source) {
                 myself.nameField.setContents(item.name || '');
             }
             src = myself.ide.getURL(
-                myself.ide.resourceURL('Examples', item.fileName)
+                myself.ide.resourceURL('examples', item.fileName)
             );
 
             xml = myself.ide.serializer.parse(src);
@@ -6002,7 +6002,7 @@ ProjectDialogMorph.prototype.openProject = function () {
         this.openCloudProject(proj);
     } else if (this.source === 'examples') {
         // Note "file" is a property of the parseResourceFile function.
-        src = this.ide.getURL(this.ide.resourceURL('Examples', proj.fileName));
+        src = this.ide.getURL(this.ide.resourceURL('examples', proj.fileName));
         this.ide.openProjectString(src);
         this.destroy();
     } else { // 'local'
