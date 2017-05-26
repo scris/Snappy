@@ -2940,6 +2940,12 @@ IDE_Morph.prototype.projectMenu = function () {
         'open a new browser browser window\n with a summary of this project'
     );
 
+    menu.addItem(
+        'Set block visibiliy',
+        'openVisibilityDialog',
+        'Choose all visible blocks.'
+    );
+
     if (shiftClicked) {
         menu.addItem(
             'Export summary with drop-shadows...',
@@ -3006,6 +3012,54 @@ IDE_Morph.prototype.projectMenu = function () {
 
     menu.popup(world, pos);
 };
+
+IDE_Morph.prototype.openVisibilityDialog = function () {
+    //worldCanvas = new WorldMorph(document.getElementById('world'));
+
+    var dialog = new DialogBoxMorph().withKey('dialogKey'),
+        //frame = new ScrollFrameMorph(),
+        //text = new TextMorph('Test Dialog'),
+        //ok = dialog.ok,
+        //myself = this,
+        //size = 550,
+        world = this.world();
+
+    //add dialog to our world (or another Morph)
+    world.add(dialog);
+
+    var txt = new TextMorph(
+        'wählen Sie das Sichtbarkeitslevel aus ',
+        10,
+        dialog.fontStyle,
+        true,
+        false,
+        'center',
+        null,
+        null,
+        null,
+        new Color(255, 255, 255)
+    );
+
+    dialog.labelString = 'Sichtbarkeit';
+    dialog.createLabel();
+    dialog.addBody(txt);
+    dialog.addButton(function () {
+        Sichtbarkeit = 1;
+        dialog.destroy();
+    }, 'min');
+    dialog.addButton(function () {
+        Sichtbarkeit = 2;
+        dialog.destroy();
+    }, 'normal');
+    dialog.addButton(function () {
+        Sichtbarkeit = 3;
+        dialog.destroy();
+    }, 'max');
+    //dialog.addButton(	function () {alert(Sichtbarkeit);}, 'debug');
+    dialog.drawNew();
+    dialog.fixLayout();
+    dialog.popUp(world);
+}
 
 IDE_Morph.prototype.resourceURL = function () {
     // Take in variadic inputs that represent an a nested folder structure.
