@@ -219,7 +219,9 @@ SnapTranslator.dict.de = {
     'only face left/right': 'kann sich nur nach\nlinks/rechts drehen',
 
     // new sprite button:
-    'add a new sprite': 'ein neues Objekt\nhinzuf\u00fcgen',
+    'add a new sprite': 'F\u00fcge ein neues Objekt hinzu',
+    'add a new Turtle sprite': 'F\u00fcge eine neue Spielfigur hinzu',
+    'paint a new sprite': 'Zeichne ein neues Objekt',
 
     // tab help
     'costumes tab help': 'Bilder durch hereinziehen von einer anderen\n'
@@ -571,6 +573,7 @@ SnapTranslator.dict.de = {
     'help': 'Hilfe',
 
     // palette:
+    'find blocks...': 'Suche Blöcke...',
     'hide primitives': 'Basisbl\u00f6cke ausblenden',
     'show primitives': 'Basisbl\u00f6cke anzeigen',
 
@@ -897,5 +900,5 @@ SnapTranslator.dict.de = {
     'center x': 'Mittelpunkt x',
     'center y': 'Mittelpunkt y',
     'name': 'Name',
-    'stage': 'B\u00fchne',
+    'stage': 'B\u00fchne'
 };
