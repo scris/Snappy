@@ -220,7 +220,7 @@ SnapTranslator.dict.de = {
 
     // new sprite button:
     'add a new sprite': 'F\u00fcge ein neues Objekt hinzu',
-    'add a new Turtle sprite': 'F\u00fcge eine neue Spielfigur hinzu',
+    'add a new Turtle sprite': 'F\u00fcge einen neuen Richtungszeiger hinzu',
     'paint a new sprite': 'Zeichne ein neues Objekt',
 
     // tab help
