@@ -2037,10 +2037,11 @@ IDE_Morph.prototype.applySavedSettings = function () {
     }
 
     // language
-    if (language && language !== 'en') {
+    // Setting default language to browser language
+    if (language && language !== (navigator.language || navigator.userLanguage)) {
         this.userLanguage = language;
     } else {
-        this.userLanguage = null;
+        this.userLanguage = navigator.language || navigator.userLanguage;
     }
 
     //  click
